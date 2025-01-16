@@ -1,15 +1,23 @@
+using CommerceCore.DAL.Commerce;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Agregar servicios al contenedor.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpContextAccessor();
+
+// Registrar el contexto de base de datos
+builder.Services.AddDbContext<SoftByte>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("cadenaSQL"))
+);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configurar el pipeline de solicitudes HTTP.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
