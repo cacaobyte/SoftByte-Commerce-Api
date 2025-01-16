@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace CC
 {
-    internal class Configuration
+    public class Configuration
     {
+        private IConfiguration appsettingsFile { get;  }
     }
 }
