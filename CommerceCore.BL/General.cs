@@ -10,7 +10,7 @@ namespace CommerceCore.BL
         public General( Configuration settings)
         {
             configuration = settings;
-            db = new SoftByte(settings.appSettings.cadenaSql); // Configuración inyectada
+            db = new SoftByte(configuration.appSettings.cadenaSql); // Configuración inyectada
         }
 
         public static string GetMonthName(short monthNumber)
