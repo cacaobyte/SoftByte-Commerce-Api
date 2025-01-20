@@ -24,6 +24,7 @@ public partial class Articulo
     public string? Createdby { get; set; }
 
     public string? Updatedby { get; set; }
+    public string? SubCategoria { get; set; }
 
     public DateTime? Fechacreacion { get; set; }
 
