@@ -14,13 +14,71 @@ namespace CommerceCore.BL.cc.logistics
             configuration = settings;
         }
 
-        public List<Articulo> GetArticulos()
+        public List<Articulo> GetArticles()
         {
-            using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
+            List<Articulo> articles = new List<Articulo>();
+            try
             {
-                // Devuelve los artículos desde la base de datos
-                return db.Articulos.ToList();
+                using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
+                {
+                    // Retrieve articles from the database and assign them to the variable
+                    articles = db.Articulos.ToList();
+                }
             }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while retrieving the articles.", ex);
+            }
+            return articles;
         }
+
+
+        /// <summary>
+        /// Obtiene todas las existencias de bodegas
+        /// </summary>
+        /// <returns>Lista de ExistenciaBodega</returns>
+        public List<ExistenciaBodega> GetAllWarehouseStocks()
+        {
+            List<ExistenciaBodega> warehouseStocks = new List<ExistenciaBodega>();
+            try
+            {
+                using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
+                {
+                    // Obtiene todas las existencias de bodegas
+                    warehouseStocks = db.ExistenciaBodegas.ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while retrieving warehouse stocks.", ex);
+            }
+
+            return warehouseStocks;
+        }
+
+        /// <summary>
+        /// Obtiene todas las existencias de bodegas
+        /// </summary>
+        /// <returns>Lista de ExistenciaBodega</returns>
+        public List<Bodega> GetAllWarehouse()
+        {
+            List<Bodega> warehouseAll = new List<Bodega>();
+            try
+            {
+                using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
+                {
+                    // Obtiene todas las existencias de bodegas
+                    warehouseAll = db.Bodegas.ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while retrieving warehouse stocks.", ex);
+            }
+
+            return warehouseAll;
+        }
+
+
     }
 }
