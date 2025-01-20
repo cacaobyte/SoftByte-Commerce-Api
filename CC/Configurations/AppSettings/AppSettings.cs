@@ -14,5 +14,10 @@ namespace CC.Configurations.AppSettings
         public AppSettings(IConfiguration configuration) {
             appsettingsFile = configuration;
         }
+
+        public bool isProduction => appsettingsFile.GetValue<bool>("appSettings:isProduction");
+        public string cadenaSql => appsettingsFile.GetValue<string>("appSettings:cadenaSQL");
+
+
     }
 }

@@ -29,5 +29,10 @@ public partial class Articulo
 
     public DateTime? Fechaactualizacion { get; set; }
 
+    /// <summary>
+    /// Se usa para guardar las subcategorías de los productos
+    /// </summary>
+    public string? SubCategoria { get; set; }
+
     public virtual ICollection<ExistenciaBodega> ExistenciaBodegas { get; set; } = new List<ExistenciaBodega>();
 }
