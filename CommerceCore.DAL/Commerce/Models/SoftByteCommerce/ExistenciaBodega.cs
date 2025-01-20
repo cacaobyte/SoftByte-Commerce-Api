@@ -60,4 +60,6 @@ public partial class ExistenciaBodega
     public decimal? CostoPromComparativoDolar { get; set; }
 
     public virtual Articulo ArticuloNavigation { get; set; } = null!;
+
+    public virtual Bodega BodegaNavigation { get; set; } = null!;
 }

@@ -18,16 +18,14 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Articulo> Articulos { get; set; }
 
+    public virtual DbSet<Bodega> Bodegas { get; set; }
+
     public virtual DbSet<ExistenciaBodega> ExistenciaBodegas { get; set; }
 
     public virtual DbSet<ExistenciaLote> ExistenciaLotes { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,6 +44,7 @@ public partial class AppDbContext : DbContext
             .HasPostgresExtension("extensions", "pgjwt")
             .HasPostgresExtension("extensions", "uuid-ossp")
             .HasPostgresExtension("graphql", "pg_graphql")
+            .HasPostgresExtension("pg_catalog", "pg_cron")
             .HasPostgresExtension("pgsodium", "pgsodium")
             .HasPostgresExtension("vault", "supabase_vault");
 
@@ -87,6 +86,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Precio)
                 .HasPrecision(10, 2)
                 .HasColumnName("precio");
+            entity.Property(e => e.SubCategoria)
+                .HasComment("Se usa para guardar las subcategorías de los productos")
+                .HasColumnType("character varying");
             entity.Property(e => e.Updatedby)
                 .HasMaxLength(50)
                 .HasColumnName("updatedby");
@@ -95,18 +97,71 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("volumen");
         });
 
+        modelBuilder.Entity<Bodega>(entity =>
+        {
+            entity.HasKey(e => e.Bodega1).HasName("bodegas_pkey");
+
+            entity.ToTable("bodegas", "softbytecommerce");
+
+            entity.Property(e => e.Bodega1)
+                .HasMaxLength(50)
+                .HasColumnName("bodega");
+            entity.Property(e => e.Activo)
+                .HasDefaultValue(true)
+                .HasColumnName("activo");
+            entity.Property(e => e.Bodegacentral)
+                .HasDefaultValue(false)
+                .HasColumnName("bodegacentral");
+            entity.Property(e => e.Bodegasecundaria)
+                .HasDefaultValue(false)
+                .HasColumnName("bodegasecundaria");
+            entity.Property(e => e.Correo)
+                .HasMaxLength(255)
+                .HasColumnName("correo");
+            entity.Property(e => e.Createdby)
+                .HasMaxLength(50)
+                .HasColumnName("createdby");
+            entity.Property(e => e.Departamento)
+                .HasMaxLength(100)
+                .HasColumnName("departamento");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(255)
+                .HasColumnName("descripcion");
+            entity.Property(e => e.Direccion).HasColumnName("direccion");
+            entity.Property(e => e.Fechaactualizacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("fechaactualizacion");
+            entity.Property(e => e.Fechacreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("fechacreacion");
+            entity.Property(e => e.Municipio)
+                .HasMaxLength(100)
+                .HasColumnName("municipio");
+            entity.Property(e => e.Region)
+                .HasMaxLength(100)
+                .HasColumnName("region");
+            entity.Property(e => e.Telefono)
+                .HasMaxLength(15)
+                .HasColumnName("telefono");
+            entity.Property(e => e.Updatedby)
+                .HasMaxLength(50)
+                .HasColumnName("updatedby");
+        });
+
         modelBuilder.Entity<ExistenciaBodega>(entity =>
         {
-            entity.HasKey(e => new { e.Articulo, e.Bodega }).HasName("existencia_bodega_pkey");
+            entity.HasKey(e => new { e.Bodega, e.Articulo }).HasName("existencia_bodega_pkey");
 
             entity.ToTable("existencia_bodega", "softbytecommerce");
 
-            entity.Property(e => e.Articulo)
-                .HasMaxLength(50)
-                .HasColumnName("articulo");
             entity.Property(e => e.Bodega)
                 .HasMaxLength(50)
                 .HasColumnName("bodega");
+            entity.Property(e => e.Articulo)
+                .HasMaxLength(50)
+                .HasColumnName("articulo");
             entity.Property(e => e.BloqueaTrans)
                 .HasDefaultValue(false)
                 .HasColumnName("bloquea_trans");
@@ -204,7 +259,11 @@ public partial class AppDbContext : DbContext
 
             entity.HasOne(d => d.ArticuloNavigation).WithMany(p => p.ExistenciaBodegas)
                 .HasForeignKey(d => d.Articulo)
-                .HasConstraintName("existencia_bodega_articulo_fkey");
+                .HasConstraintName("fk_existencia_bodega_articulo");
+
+            entity.HasOne(d => d.BodegaNavigation).WithMany(p => p.ExistenciaBodegas)
+                .HasForeignKey(d => d.Bodega)
+                .HasConstraintName("fk_existencia_bodega_bodega");
         });
 
         modelBuilder.Entity<ExistenciaLote>(entity =>
