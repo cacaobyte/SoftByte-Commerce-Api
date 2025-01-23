@@ -1,6 +1,7 @@
 ﻿using CommerceCore.Api.Tools;
 using Microsoft.AspNetCore.Mvc;
 using CommerceCore.BL.cc.logistics;
+using CommerceCore.DAL.Commerce.Models.SoftByteCommerce;
 
 namespace CommerceCore.Api.Controllers.cc.logistics
 {
@@ -30,7 +31,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics
             {
 
                 // Devolver un error genérico al cliente, sin exponer información sensible
-                return StatusCode(500, "An error occurred while retrieving the articles.");
+                return StatusCode(500, $"An error occurred while retrieving the articles.{ex}");
             }
         }
 
@@ -49,7 +50,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics
             catch (Exception ex)
             {
 
-                return StatusCode(500, "An error occurred while retrieving stock items warehouse.");
+                return StatusCode(500, $"An error occurred while retrieving stock items warehouse.{ex}");
             }
         }
 
@@ -70,9 +71,35 @@ namespace CommerceCore.Api.Controllers.cc.logistics
             catch (Exception ex)
             {
 
-                return StatusCode(500, "An error occurred while retrieving all warehouse.");
+                return StatusCode(500, $"An error occurred while retrieving all warehouse.{ex}");
             }
         }
+
+
+        [HttpPost("articulos")]
+        public IActionResult CreateArticle([FromForm] Articulo newArticle, [FromForm] IFormFile imageFile, [FromQuery] string userName)
+        {
+            try
+            {
+                if (newArticle == null)
+                {
+                    return BadRequest("The article data is required.");
+                }
+
+                var createdArticle = blArticles.CreateArticle(newArticle, imageFile, userName);
+                return Ok(createdArticle);
+            }
+            catch (ApplicationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while creating the article. {ex}");
+            }
+        }
+
+
 
 
     }

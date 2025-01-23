@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CloudinaryDotNet" Version="1.27.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CC\CC.csproj" />
     <ProjectReference Include="..\CommerceCore.DAL\CommerceCore.DAL.csproj" />
     <ProjectReference Include="..\CommerceCore.ML\CommerceCore.ML.csproj" />
