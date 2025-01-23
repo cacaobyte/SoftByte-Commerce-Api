@@ -15,8 +15,8 @@ namespace CC.Configurations.AppSettings
             appsettingsFile = configuration;
         }
 
-        public bool isProduction => appsettingsFile.GetValue<bool>("appSettings:isProduction");
-        public string cadenaSql => appsettingsFile.GetValue<string>("appSettings:cadenaSQL");
+        public bool isProduction => appsettingsFile.GetValue<bool>("appSettings:isProduction", defaultValue: false);
+        public string cadenaSql => appsettingsFile.GetValue<string>("appSettings:cadenaSQL") ?? throw new InvalidOperationException("The 'cadenaSQL' setting cannot be null.");
 
 
     }
