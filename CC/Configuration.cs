@@ -1,4 +1,5 @@
 ﻿using CC.Configurations.AppSettings;
+using CC.Configurations.AppSettings.service;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,8 @@ namespace CC
         }
 
         public AppSettings appSettings => new AppSettings(this.appsettingsFile);
+
+        public Cloudinary cloudinary => new Cloudinary(this.appsettingsFile);
 
     }
 }
