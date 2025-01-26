@@ -3,7 +3,7 @@ services:
     name: SoftByte-Commerce-Api
     env: docker
     plan: free
-    dockerfilePath: ./Dockerfile # Ruta del Dockerfile
+    dockerfilePath: ./Dockerfile # Ruta al Dockerfile en tu proyecto
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
@@ -11,18 +11,9 @@ services:
         value: postgres.cfpysmdpetezuwzguyjm
       - key: DB_PASSWORD
         value: Byte-Events.cacao2000
-      - key: DB_SERVER
+      - key: DB_HOST
         value: aws-0-us-west-1.pooler.supabase.com
       - key: DB_PORT
         value: "5432"
       - key: DB_NAME
         value: postgres
-      - key: CLOUDINARY_CLOUDNAME
-        value: dhhtmdjmt
-      - key: CLOUDINARY_APIKEY
-        value: 351234858223853
-      - key: CLOUDINARY_APISECRET
-        value: tdSg1RuP6GfItRy-GrC-dLDkCSE
-    buildCommand: ""
-    startCommand: "dotnet CommerceCore.Api.dll"
-    autoDeploy: true
