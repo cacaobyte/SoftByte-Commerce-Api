@@ -3,7 +3,7 @@ services:
     name: SoftByte-Commerce-Api
     env: docker
     plan: free
-    dockerfilePath: ./Dockerfile # Ruta al Dockerfile en tu proyecto
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
