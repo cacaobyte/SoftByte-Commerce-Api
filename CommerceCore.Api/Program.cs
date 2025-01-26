@@ -12,6 +12,17 @@ builder.Services.AddDbContext<SoftByte>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("cadenaSQL"))
 );
 
+// Configurar CORS para aceptar solicitudes de cualquier origen
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 // Configurar el pipeline de solicitudes HTTP.
@@ -25,6 +36,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// Aplicar CORS con la política "AllowAll"
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 

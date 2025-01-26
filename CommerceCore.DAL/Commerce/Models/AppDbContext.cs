@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using CommerceCore.DAL.Commerce.Models.SoftByteCommerce;
+using CommerceCore.ML;
 using Microsoft.EntityFrameworkCore;
 
 namespace CommerceCore.DAL.Commerce.Models;
@@ -257,9 +257,6 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("updatedby");
 
-            entity.HasOne(d => d.ArticuloNavigation).WithMany(p => p.ExistenciaBodegas)
-                .HasForeignKey(d => d.Articulo)
-                .HasConstraintName("fk_existencia_bodega_articulo");
 
             entity.HasOne(d => d.BodegaNavigation).WithMany(p => p.ExistenciaBodegas)
                 .HasForeignKey(d => d.Bodega)
