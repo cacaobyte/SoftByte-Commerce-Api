@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-namespace CommerceCore.ML;
+
 
 public partial class Articulo
 {
+    [Key] // Define esta propiedad como clave primaria
     public string Articulo1 { get; set; } = null!;
 
     public string Descripcion { get; set; } = null!;
+    public string? Foto { get; set; }
 
     public string? Categoria { get; set; }
 
@@ -24,11 +27,15 @@ public partial class Articulo
     public string? Createdby { get; set; }
 
     public string? Updatedby { get; set; }
-    public string? SubCategoria { get; set; }
 
     public DateTime? Fechacreacion { get; set; }
 
     public DateTime? Fechaactualizacion { get; set; }
 
-    public virtual ICollection<ExistenciaBodega> ExistenciaBodegas { get; set; } = new List<ExistenciaBodega>();
+    /// <summary>
+    /// Se usa para guardar las subcategorías de los productos
+    /// </summary>
+    public string? SubCategoria { get; set; }
+
+   // public virtual ICollection<ExistenciaBodega> ExistenciaBodegas { get; set; } = new List<ExistenciaBodega>();
 }

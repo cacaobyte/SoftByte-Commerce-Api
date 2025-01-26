@@ -16,10 +16,10 @@ namespace CommerceCore.Api.Controllers.cc.logistics
         private Articles blArticles { get; } = new Articles(Tool.configuration);
 
         /// <summary>
-        /// Devuelve las existencias de artículos
+        /// Devuelve las existencias de artículos para tienda y clientes minuristas
         /// </summary>
         /// <returns></returns>
-        [HttpGet("articulos")] // Usa una ruta relativa para que se combine con la ruta base del controlador.
+        [HttpGet("articulos")] 
         public IActionResult GetArticlesWarehouse()
         {
             try
@@ -29,11 +29,28 @@ namespace CommerceCore.Api.Controllers.cc.logistics
             }
             catch (Exception ex)
             {
-
-                // Devolver un error genérico al cliente, sin exponer información sensible
                 return StatusCode(500, $"An error occurred while retrieving the articles.{ex}");
             }
         }
+
+        /// <summary>
+        /// Devuelve las existencias de artículos para mayoreo
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("articulosMayoreo")] 
+        public IActionResult GetWholesaleItems()
+        {
+            try
+            {
+                var result = blArticles.GetWholesaleItems();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while retrieving the articles.{ex}");
+            }
+        }
+
 
         /// <summary>
         /// Devuelve las existencias de artículos
