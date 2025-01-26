@@ -3,7 +3,7 @@ services:
     name: SoftByte-Commerce-Api
     env: docker
     plan: free
-    dockerfilePath: ./CommerceCore/CommerceCore.Api/Dockerfile
+    dockerfilePath: ./CommerceCore.Api/Dockerfile
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
