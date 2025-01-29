@@ -33,7 +33,7 @@ namespace CommerceCore.BL.cc.logistics
                 {
                     // Filtra artículos que no son de mayoreo (no empiezan con 'M') y los proyecta a ArticleView
                     return db.Articulos
-                             .Where(a => !string.IsNullOrEmpty(a.Articulo1) && !a.Articulo1.StartsWith("M"))
+                             .Where(a => !string.IsNullOrEmpty(a.Articulo1) && !a.Articulo1.StartsWith("M") && a.Activo == true)
                              .Select(a => new ArticleView
                              {
                                  Articulo1 = a.Articulo1,
