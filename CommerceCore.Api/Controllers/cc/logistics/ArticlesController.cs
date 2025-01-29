@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using CommerceCore.BL.cc.logistics;
 using CommerceCore.DAL.Commerce.Models.SoftByteCommerce;
+using CommerceCore.ML.cc.sale;
 
 namespace CommerceCore.Api.Controllers.cc.logistics
 {
@@ -19,12 +20,31 @@ namespace CommerceCore.Api.Controllers.cc.logistics
         /// Devuelve las existencias de artículos para tienda y clientes minuristas
         /// </summary>
         /// <returns></returns>
+        [HttpGet("articulosTodos")]
+        public IActionResult GetAllArticles()
+        {
+            try
+            {
+                var result = blArticles.GetArticles();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while retrieving the articles.{ex}");
+            }
+        }
+
+        /// <summary>
+        /// Devuelve las existencias de artículos para tienda y clientes minuristas
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("articulos")] 
         public IActionResult GetArticlesWarehouse()
         {
             try
             {
-                var result = blArticles.GetArticles();
+                string warehouse = "B001";
+                var result = blArticles.GetArticlesWarehouse(warehouse);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -93,28 +113,25 @@ namespace CommerceCore.Api.Controllers.cc.logistics
         }
 
 
-        [HttpPost("articulos")]
-        public IActionResult CreateArticle([FromForm] Articulo newArticle, [FromForm] IFormFile imageFile, [FromQuery] string userName)
+        [HttpPost("crearArticulos")]
+        public IActionResult CreateArticle([FromForm] CreateArticle newArticleData, [FromForm] IFormFile imageFile)
         {
             try
             {
-                if (newArticle == null)
+                if (newArticleData == null)
                 {
                     return BadRequest("The article data is required.");
                 }
 
-                var createdArticle = blArticles.CreateArticle(newArticle, imageFile, userName);
+                var createdArticle = blArticles.CreateArticle(newArticleData, imageFile, userName);
                 return Ok(createdArticle);
-            }
-            catch (ApplicationException ex)
-            {
-                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred while creating the article. {ex}");
+                throw new Exception( ex.Message );
             }
         }
+
 
 
 
