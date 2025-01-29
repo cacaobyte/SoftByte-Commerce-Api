@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 public partial class Articulo
 {
-    [Key] // Define esta propiedad como clave primaria
+    
     public string Articulo1 { get; set; } = null!;
 
     public string Descripcion { get; set; } = null!;
@@ -36,6 +36,7 @@ public partial class Articulo
     /// Se usa para guardar las subcategorías de los productos
     /// </summary>
     public string? SubCategoria { get; set; }
+    public string? Clasificacion { get; set; }
 
-   // public virtual ICollection<ExistenciaBodega> ExistenciaBodegas { get; set; } = new List<ExistenciaBodega>();
+    // public virtual ICollection<ExistenciaBodega> ExistenciaBodegas { get; set; } = new List<ExistenciaBodega>();
 }
