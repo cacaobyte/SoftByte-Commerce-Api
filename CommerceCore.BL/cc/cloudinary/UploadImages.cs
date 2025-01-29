@@ -58,7 +58,7 @@ namespace CommerceCore.BL.cc.cloudinary
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("An error occurred while uploading the image to Cloudinary.", ex);
+                throw new Exception( ex.Message );
             }
         }
 

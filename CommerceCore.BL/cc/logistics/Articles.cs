@@ -8,6 +8,7 @@ using CommerceCore.BL.cc.cloudinary;
 using Microsoft.AspNetCore.Http;
 using ExistenciaBodega = CommerceCore.ML.ExistenciaBodega;
 using Bodega = CommerceCore.ML.Bodega;
+using CommerceCore.ML.cc.sale;
 
 namespace CommerceCore.BL.cc.logistics
 {
@@ -24,16 +25,85 @@ namespace CommerceCore.BL.cc.logistics
         /// Obtiene todas las existencias de artículos que no son para mayoreo
         /// </summary>
         /// <returns>Lista de artículos para los clientes</returns>
-        public List<Articulo> GetArticles()
+        public List<ArticleView> GetArticles()
         {
             try
             {
                 using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
                 {
-                    // Filtra artículos que no son de mayoreo (no empiezan con 'M')
+                    // Filtra artículos que no son de mayoreo (no empiezan con 'M') y los proyecta a ArticleView
                     return db.Articulos
                              .Where(a => !string.IsNullOrEmpty(a.Articulo1) && !a.Articulo1.StartsWith("M"))
+                             .Select(a => new ArticleView
+                             {
+                                 Articulo1 = a.Articulo1,
+                                 Descripcion = a.Descripcion,
+                                 Foto = a.Foto,
+                                 Categoria = a.Categoria,
+                                 Precio = a.Precio,
+                                 PesoNeto = a.PesoNeto,
+                                 PesoBruto = a.PesoBruto,
+                                 Volumen = a.Volumen,
+                                 Activo = a.Activo,
+                                 Createdby = a.Createdby,
+                                 Updatedby = a.Updatedby,
+                                 Fechacreacion = a.Fechacreacion,
+                                 Fechaactualizacion = a.Fechaactualizacion,
+                                 SubCategoria = a.SubCategoria,
+                                 clasificación = a.Clasificacion,
+                             })
                              .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while retrieving the articles.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Obtiene todas las existencias de artículos que no son para mayoreo
+        /// </summary>
+        /// <returns>Lista de artículos para los clientes</returns>
+        public List<ArticleView> GetArticlesWarehouse(string warehouse)
+        {
+            try
+            {
+                if(warehouse == null)
+                {
+                    throw new Exception($"No se obtuvo la bodega para traer los articulos");
+                }
+
+                using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
+                {
+                    var result = db.Articulos
+                                    .Join( db.ExistenciaBodegas,   a => a.Articulo1,  eb => eb.Articulo,  (a, eb) => new { a, eb } )
+                                    .Where(x =>  !string.IsNullOrEmpty(x.a.Articulo1) &&  !x.a.Articulo1.StartsWith("M") &&  x.eb.Bodega == warehouse  )
+                                    .Select(x => new ArticleView
+                                    {
+                                        Articulo1 = x.a.Articulo1,
+                                        Descripcion = x.a.Descripcion,
+                                        Foto = x.a.Foto,
+                                        Categoria = x.a.Categoria,
+                                        Precio = x.a.Precio,
+                                        PesoNeto = x.a.PesoNeto,
+                                        PesoBruto = x.a.PesoBruto,
+                                        Volumen = x.a.Volumen,
+                                        Activo = x.a.Activo,
+                                        Createdby = x.a.Createdby,
+                                        Updatedby = x.a.Updatedby,
+                                        Fechacreacion = x.a.Fechacreacion,
+                                        Fechaactualizacion = x.a.Fechaactualizacion,
+                                        SubCategoria = x.a.SubCategoria,
+                                        clasificación = x.a.Clasificacion,
+                                        disponible = x.eb.CantDisponible,
+                                        existencias = x.eb.CantDisponible + x.eb.CantReservada,
+                                        reservada = x.eb.CantReservada,
+                                        totalValorProducto = x.eb.CantDisponible * x.a.Precio,
+                                        bodega = x.eb.Bodega,
+                                    })
+                                    .ToList();
+                    return result;
                 }
             }
             catch (Exception ex)
@@ -175,41 +245,73 @@ namespace CommerceCore.BL.cc.logistics
         /// <param name="imageFile">El archivo de imagen enviado desde el frontend.</param>
         /// <param name="userName">El nombre del usuario que crea el artículo.</param>
         /// <returns>El artículo creado con su URL de imagen.</returns>
-        public Articulo CreateArticle(Articulo newArticle, IFormFile imageFile, string userName)
+        public Articulo CreateArticle(CreateArticle newArticleData, IFormFile imageFile, string userName)
         {
-            // Carpeta específica para artículos en Cloudinary
             string folder = "SoftByte/Commerce/Articulos";
 
             try
             {
                 using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
                 {
-                    // Verificar que se haya enviado un archivo de imagen
-                    if (imageFile != null && imageFile.Length > 0)
-                    {
-                        // Subir la imagen a Cloudinary
-                        string imageUrl = blUploadImages.UploadImage(imageFile, folder);
+                    // 🔹 Generar el nuevo código de artículo
+                    var lastArticle = db.Articulos
+                        .Where(a => a.Articulo1.StartsWith("A") && a.Articulo1.Length == 9)
+                        .OrderByDescending(a => a.Articulo1)
+                        .FirstOrDefault();
 
-                        // Asignar la URL de la imagen al artículo
-                        newArticle.Foto = imageUrl;
+                    string newArticuloCode = "A00000001"; // Código inicial si no hay registros
+
+                    if (lastArticle != null)
+                    {
+                        // Extraer el número del último código de artículo y sumarle 1
+                        string lastCode = lastArticle.Articulo1.Substring(1);
+                        if (int.TryParse(lastCode, out int lastNumber))
+                        {
+                            newArticuloCode = $"A{(lastNumber + 1):D8}";
+                        }
                     }
 
-                    // Asignar campos de auditoría
-                    newArticle.Createdby = userName;
-                    newArticle.Fechacreacion = DateTime.Now;
+                    // 🔹 Mapear los datos de `CreateArticle` a `Articulo`
+                    var newArticulo = new Articulo
+                    {
+                        Articulo1 = newArticuloCode,
+                        Descripcion = newArticleData.Descripcion,
+                        Foto = null, // Se asignará después si hay imagen
+                        Categoria = newArticleData.Categoria,
+                        Precio = newArticleData.Precio,
+                        PesoNeto = newArticleData.PesoNeto,
+                        PesoBruto = newArticleData.PesoBruto,
+                        Volumen = newArticleData.Volumen,
+                        Activo = newArticleData.Activo,
+                        Createdby = userName,
+                        Fechacreacion = DateTime.Now,
+                        SubCategoria = newArticleData.SubCategoria,
+                        Clasificacion = newArticleData.Clasificacion
+                    };
 
-                    // Agregar el artículo a la base de datos
-                    db.Articulos.Add(newArticle);
+                    // 🔹 Subir imagen a Cloudinary si existe
+                    if (imageFile != null && imageFile.Length > 0)
+                    {
+                        string imageUrl = blUploadImages.UploadImage(imageFile, folder);
+                        newArticulo.Foto = imageUrl;
+                    }
+
+                    // 🔹 Guardar en la base de datos
+                    db.Articulos.Add(newArticulo);
                     db.SaveChanges();
 
-                    return newArticle;
+                    return newArticulo;
                 }
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("An error occurred while creating the article.", ex);
+                throw new Exception( ex.Message );
             }
         }
+
+
+
+
 
 
 

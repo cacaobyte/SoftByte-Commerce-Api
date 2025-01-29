@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: SoftByte-Commerce-Api
+    env: docker
+    plan: free
+    dockerfilePath: ./CommerceCore.Api/Dockerfile
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DB_USER
+        value: postgres.cfpysmdpetezuwzguyjm
+      - key: DB_PASSWORD
+        value: Byte-Events.cacao2000
