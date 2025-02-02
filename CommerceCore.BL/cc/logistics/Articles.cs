@@ -191,7 +191,7 @@ namespace CommerceCore.BL.cc.logistics
 
 
         /// <summary>
-        /// Obtiene todas las existencias de bodegas
+        /// Obtiene todas las  bodegas
         /// </summary>
         /// <returns>Lista de Bodega (ML)</returns>
         public List<Bodega> GetAllWarehouse()
@@ -219,12 +219,12 @@ namespace CommerceCore.BL.cc.logistics
                         Region = b.Region,
                         Correo = b.Correo,
                         // Relación opcional: solo si necesitas cargar las existencias
-                        ExistenciaBodegas = b.ExistenciaBodegas.Select(eb => new ExistenciaBodega
+                    /*    ExistenciaBodegas = b.ExistenciaBodegas.Select(eb => new ExistenciaBodega
                         {
                             Articulo = eb.Articulo,
                             Bodega = eb.Bodega,
                             CantDisponible = eb.CantDisponible
-                        }).ToList()
+                        }).ToList()*/
                     }).ToList();
                 }
             }
