@@ -7,7 +7,7 @@ using CommerceCore.ML.cc.sale;
 namespace CommerceCore.Api.Controllers.cc.logistics
 {
     [Route("api/cc/warehouse")]
-    [ApiController] // Recomendado para habilitar características automáticas.
+    [ApiController] 
     public class ArticlesController : CustomController
     {
         /// <summary>
@@ -108,7 +108,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics
             catch (Exception ex)
             {
 
-                return StatusCode(500, $"An error occurred while retrieving all warehouse.{ex}");
+                throw new Exception(ex.Message);
             }
         }
 
