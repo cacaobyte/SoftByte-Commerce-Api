@@ -38,7 +38,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics.warehouse
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+               throw new Exception(ex.Message);
             }
         }
 
@@ -66,7 +66,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics.warehouse
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+                throw new Exception(ex.Message);
             }
         }
 
