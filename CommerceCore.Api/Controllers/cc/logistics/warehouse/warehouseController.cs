@@ -43,6 +43,36 @@ namespace CommerceCore.Api.Controllers.cc.logistics.warehouse
         }
 
 
+        /// <summary>
+        /// Actualiza los datos de una bodega existente.
+        /// </summary>
+        /// <param name="warehouseId">ID de la bodega a actualizar</param>
+        /// <param name="updatedWarehouse">Objeto con los datos actualizados de la bodega</param>
+        /// <returns>Mensaje de éxito o error</returns>
+        [HttpPut("editWarehouse/{warehouseId}")]
+        public IActionResult UpdateWarehouse(string warehouseId, [FromBody] CreateWarehouse updatedWarehouse)
+        {
+            try
+            {
+                if (updatedWarehouse == null)
+                {
+                    return BadRequest(new { message = "Los datos de la bodega son inválidos." });
+                }
+
+                var resultado = blWarehouse.UpdateWarehouse(warehouseId, updatedWarehouse, userName);
+
+                if (resultado.StartsWith("Error"))
+                {
+                    return NotFound(new { message = resultado });
+                }
+
+                return Ok(new { message = resultado });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
 
         /// <summary>
