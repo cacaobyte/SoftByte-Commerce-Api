@@ -5,3 +5,5 @@ dotnet ef dbcontext scaffold "Host=db.alvpcoafhnekoufppayq.supabase.co;Database=
 //nuevo comando
 
  dotnet ef dbcontext scaffold "User Id=postgres.cfpysmdpetezuwzguyjm;Password=Byte-Events.cacao2000;Server=aws-0-us-west-1.pooler.supabase.com;Port=5432;Database=postgres;SSL Mode=Require;Trust Server Certificate=true" Npgsql.EntityFrameworkCore.PostgreSQL --context AppDbContext --output-dir "Commerce\Models" --schema softbytecommerce --project "C:\Users\enriq\Desktop\SoftByte Commerce\CommerceCore\CommerceCore.DAL\CommerceCore.DAL.csproj" --startup-project "C:\Users\enriq\Desktop\SoftByte Commerce\CommerceCore\CommerceCore.DAL\CommerceCore.DAL.csproj" --force
+
+
