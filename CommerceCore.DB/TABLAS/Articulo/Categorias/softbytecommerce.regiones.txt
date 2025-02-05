@@ -1,0 +1,11 @@
+##Tabla para crear las regiones de un pais
+
+CREATE TABLE softbytecommerce.regiones (
+    id_region SERIAL PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL UNIQUE,
+    codigo VARCHAR(50) UNIQUE NOT NULL, 
+    descripcion TEXT,
+    tipo_region VARCHAR(100) CHECK (tipo_region IN ('Urbana', 'Rural', 'Industrial', 'Comercial')),
+    estatus BOOLEAN NOT NULL DEFAULT TRUE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

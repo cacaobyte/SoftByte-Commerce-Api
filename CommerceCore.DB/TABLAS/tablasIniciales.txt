@@ -1,0 +1,218 @@
+##Configuración inicial de los esquemas y las tablas del sistema
+
+-- Crear el esquema "Seguridad"
+CREATE SCHEMA Seguridad;
+
+-- Crear el esquema "SoftByteCommerce"
+CREATE SCHEMA SoftByteCommerce;
+
+
+SELECT schema_name
+FROM information_schema.schemata;
+
+
+
+   CREATE TABLE SoftByteCommerce.Articulo (
+    ARTICULO VARCHAR(50) PRIMARY KEY, -- Identificador único del artículo
+    DESCRIPCION VARCHAR(255) NOT NULL, -- Descripción del artículo
+    Categoria VARCHAR(150), -- Categoría (ej. Muebles, Electrónica)
+    Precio DECIMAL(10, 2) NOT NULL,
+    PESO_NETO DECIMAL(10, 2), -- Peso neto del artículo
+    PESO_BRUTO DECIMAL(10, 2), -- Peso bruto del artículo
+    VOLUMEN DECIMAL(10, 2), -- Volumen del artículo
+    ACTIVO BOOLEAN DEFAULT TRUE, -- Si el artículo está activo o no
+    CreatedBy VARCHAR(50), -- Usuario creador
+    UpdatedBy VARCHAR(50), -- Último usuario que modificó
+    FechaCreacion TIMESTAMP DEFAULT NOW(), -- Fecha de creación
+    FechaActualizacion TIMESTAMP DEFAULT NOW() -- Fecha de última actualización
+);
+
+
+CREATE TABLE SoftByteCommerce.Existencia_Bodega (
+    ARTICULO VARCHAR(50) NOT NULL, -- Relación con la tabla Articulo
+    BODEGA VARCHAR(50) NOT NULL, -- Identificador de la bodega
+    EXISTENCIA_MINIMA DECIMAL(10, 2) DEFAULT 0, -- Existencia mínima
+    EXISTENCIA_MAXIMA DECIMAL(10, 2) DEFAULT 0, -- Existencia máxima
+    PUNTO_DE_REORDEN DECIMAL(10, 2) DEFAULT 0, -- Punto de reorden
+    CANT_DISPONIBLE DECIMAL(10, 2) DEFAULT 0, -- Cantidad disponible
+    CANT_RESERVADA DECIMAL(10, 2) DEFAULT 0, -- Cantidad reservada
+    CANT_NO_APROBADA DECIMAL(10, 2) DEFAULT 0, -- Cantidad no aprobada
+    CANT_VENCIDA DECIMAL(10, 2) DEFAULT 0, -- Cantidad vencida
+    CANT_TRANSITO DECIMAL(10, 2) DEFAULT 0, -- Cantidad en tránsito
+    CANT_PRODUCCION DECIMAL(10, 2) DEFAULT 0, -- Cantidad en producción
+    CANT_PEDIDA DECIMAL(10, 2) DEFAULT 0, -- Cantidad pedida
+    CANT_REMITIDA DECIMAL(10, 2) DEFAULT 0, -- Cantidad remitida
+    CONGELADO BOOLEAN DEFAULT FALSE, -- Indicador de bodega congelada
+    FECHA_CONG TIMESTAMP, -- Fecha de congelamiento
+    BLOQUEA_TRANS BOOLEAN DEFAULT FALSE, -- Bloqueo de transferencias
+    FECHA_DESCONG TIMESTAMP, -- Fecha de descongelamiento
+    CreatedBy VARCHAR(50), -- Usuario creador
+    UpdatedBy VARCHAR(50), -- Último usuario que modificó
+    FechaCreacion TIMESTAMP DEFAULT NOW(), -- Fecha de creación
+    FechaActualizacion TIMESTAMP DEFAULT NOW(), -- Fecha de última actualización
+    COSTO_UNT_PROMEDIO_LOC DECIMAL(10, 2) DEFAULT 0, -- Costo promedio local
+    COSTO_UNT_PROMEDIO_DOL DECIMAL(10, 2) DEFAULT 0, -- Costo promedio en dólares
+    COSTO_UNT_ESTANDAR_LOC DECIMAL(10, 2) DEFAULT 0, -- Costo estándar local
+    COSTO_UNT_ESTANDAR_DOL DECIMAL(10, 2) DEFAULT 0, -- Costo estándar en dólares
+    COSTO_PROM_COMPARATIVO_LOC DECIMAL(10, 2) DEFAULT 0, -- Costo comparativo local
+    COSTO_PROM_COMPARATIVO_DOLAR DECIMAL(10, 2) DEFAULT 0, -- Costo comparativo en dólares
+    PRIMARY KEY (ARTICULO, BODEGA), -- Clave primaria compuesta
+    FOREIGN KEY (ARTICULO) REFERENCES SoftByteCommerce.Articulo(ARTICULO) ON DELETE CASCADE
+);
+
+CREATE TABLE SoftByteCommerce.Existencia_Lote (
+    BODEGA VARCHAR(50) NOT NULL, -- Relación con la bodega
+    ARTICULO VARCHAR(50) NOT NULL, -- Relación con el artículo
+    LOCALIZACION VARCHAR(100), -- Localización física del lote
+    LOTE VARCHAR(50) NOT NULL, -- Código o nombre del lote
+    CANT_DISPONIBLE DECIMAL(10, 2) DEFAULT 0, -- Cantidad disponible
+    CANT_RESERVADA DECIMAL(10, 2) DEFAULT 0, -- Cantidad reservada
+    CANT_NO_APROBADA DECIMAL(10, 2) DEFAULT 0, -- Cantidad no aprobada
+    CANT_VENCIDA DECIMAL(10, 2) DEFAULT 0, -- Cantidad vencida
+    CANT_REMITIDA DECIMAL(10, 2) DEFAULT 0, -- Cantidad remitida
+    COSTO_UNT_PROMEDIO_LOC DECIMAL(10, 2) DEFAULT 0, -- Costo promedio local
+    COSTO_UNT_PROMEDIO_DOL DECIMAL(10, 2) DEFAULT 0, -- Costo promedio en dólares
+    COSTO_UNT_ESTANDAR_LOC DECIMAL(10, 2) DEFAULT 0, -- Costo estándar local
+    COSTO_UNT_ESTANDAR_DOL DECIMAL(10, 2) DEFAULT 0, -- Costo estándar en dólares
+    CreatedBy VARCHAR(50), -- Usuario creador
+    UpdatedBy VARCHAR(50), -- Último usuario que modificó
+    FechaCreacion TIMESTAMP DEFAULT NOW(), -- Fecha de creación
+    FechaActualizacion TIMESTAMP DEFAULT NOW(), -- Fecha de última actualización
+    PRIMARY KEY (BODEGA, ARTICULO, LOTE), -- Clave primaria compuesta
+    FOREIGN KEY (BODEGA, ARTICULO) REFERENCES SoftByteCommerce.Existencia_Bodega(BODEGA, ARTICULO) ON DELETE CASCADE
+);
+
+
+CREATE TABLE SoftByteCommerce.Usuario (
+    USUARIO VARCHAR(50) PRIMARY KEY, -- Identificador único del usuario
+    NOMBRE VARCHAR(100) NOT NULL, -- Nombre completo del usuario
+    TIPO VARCHAR(50), -- Tipo de usuario (Ej: Admin, Cliente)
+    ACTIVO BOOLEAN DEFAULT TRUE, -- Si el usuario está activo
+    REQ_CAMBIO_CLAVE BOOLEAN DEFAULT FALSE, -- Si requiere cambiar su clave
+    FRECUENCIA_CLAVE SMALLINT DEFAULT 0, -- Frecuencia en días para cambio de clave
+    FECHA_ULT_CLAVE TIMESTAMP, -- Fecha del último cambio de clave
+    MAX_INTENTOS_CONEX SMALLINT DEFAULT 5, -- Máximo de intentos de conexión
+    CLAVE VARCHAR(255) NOT NULL, -- Contraseña del usuario (encriptada)
+    CORREO_ELECTRONICO VARCHAR(255) UNIQUE, -- Correo electrónico del usuario
+    CELULAR VARCHAR(15), -- Número de celular del usuario
+    TELEFONO_1 VARCHAR(15), -- Teléfono principal
+    TELEFONO_2 VARCHAR(15), -- Teléfono secundario
+    DIRECCION TEXT, -- Dirección del usuario
+    DOCUMENTO_IDENTIFICACION VARCHAR(50), -- Documento de identificación (DPI, pasaporte, etc.)
+    FOTO_URL VARCHAR(255), -- URL de la foto del usuario
+    FECHA_NACIMIENTO DATE, -- Fecha de nacimiento del usuario
+    TIPO_ACCESO VARCHAR(50), -- Tipo de acceso (Ej: Usuario interno, cliente externo)
+    TIPO_PERSONALIZADO VARCHAR(50), -- Tipo personalizado si aplica
+    CreatedBy VARCHAR(50), -- Usuario creador
+    UpdatedBy VARCHAR(50), -- Último usuario que modificó
+    CreateDate TIMESTAMP DEFAULT NOW(), -- Fecha de creación
+    UpdateDate TIMESTAMP DEFAULT NOW(), -- Fecha de última actualización
+    NoteExistsFlag BOOLEAN DEFAULT FALSE, -- Indicador de notas adicionales
+    RecordDate TIMESTAMP, -- Fecha de registro o modificación
+    RowPointer UUID DEFAULT gen_random_uuid() -- Identificador único global (UUID)
+);
+
+
+CREATE TABLE SoftByteCommerce.bodegas (
+    bodega VARCHAR(50) PRIMARY KEY, -- Código único de la bodega, definido manualmente
+    descripcion VARCHAR(255), -- Descripción o nombre de la bodega
+    activo BOOLEAN DEFAULT TRUE, -- Indica si la bodega está activa o no
+    createdby VARCHAR(50), -- Usuario que creó la bodega
+    updatedby VARCHAR(50), -- Usuario que actualizó la bodega
+    fechacreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Fecha de creación
+    fechaactualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Fecha de última actualización
+    departamento VARCHAR(100), -- Departamento donde se ubica la bodega
+    municipio VARCHAR(100), -- Municipio donde se ubica la bodega
+    direccion TEXT, -- Dirección específica de la bodega
+    telefono VARCHAR(15), -- Teléfono de contacto de la bodega
+    bodegaCentral BOOLEAN DEFAULT FALSE, -- Indica si es una bodega central
+    bodegaSecundaria BOOLEAN DEFAULT FALSE, -- Indica si es una bodega secundaria
+    region VARCHAR(100), -- Región donde se encuentra la bodega
+    correo VARCHAR(255) -- Correo electrónico de la bodega
+);
+
+
+
+
+
+-- Verificar valores en Existencia_Bodega no presentes en bodegas
+SELECT bodega
+FROM SoftByteCommerce.Existencia_Bodega
+WHERE bodega NOT IN (SELECT bodega FROM SoftByteCommerce.bodegas);
+
+-- Verificar valores en Existencia_Lote no presentes en bodegas
+SELECT bodega
+FROM SoftByteCommerce.Existencia_Lote
+WHERE bodega NOT IN (SELECT bodega FROM SoftByteCommerce.bodegas);
+
+
+
+ALTER TABLE SoftByteCommerce.Existencia_Bodega
+ADD CONSTRAINT fk_existenciabodega_bodega
+FOREIGN KEY (bodega) REFERENCES SoftByteCommerce.bodegas(bodega)
+ON DELETE CASCADE;
+
+
+-- Relacionar 'bodega' con la tabla 'bodegas'
+ALTER TABLE softbytecommerce.existencia_bodega
+ADD CONSTRAINT fk_existencia_bodega_bodega
+FOREIGN KEY (bodega) REFERENCES softbytecommerce.bodegas(bodega)
+ON DELETE CASCADE;
+
+-- Relacionar 'articulo' con la tabla 'articulo'
+ALTER TABLE softbytecommerce.existencia_bodega
+ADD CONSTRAINT fk_existencia_bodega_articulo
+FOREIGN KEY (articulo) REFERENCES softbytecommerce.articulo(articulo)
+ON DELETE CASCADE;
+
+
+ALTER TABLE softbytecommerce.existencia_bodega
+DROP CONSTRAINT existencia_bodega_pkey CASCADE;
+
+
+ALTER TABLE softbytecommerce.existencia_bodega
+ADD PRIMARY KEY (bodega, articulo);
+
+
+ALTER TABLE softbytecommerce.existencia_bodega
+DROP CONSTRAINT IF EXISTS existencia_bodega_articulo_fkey CASCADE;
+
+ALTER TABLE softbytecommerce.existencia_bodega
+DROP CONSTRAINT IF EXISTS fk_existenciabodega_bodega CASCADE;
+
+DELETE FROM softbytecommerce.existencia_bodega;
+
+
+SELECT conname AS constraint_name, conrelid::regclass AS table_name, a.attname AS column_name
+FROM pg_constraint AS c
+JOIN pg_attribute AS a ON a.attnum = ANY(c.conkey) AND a.attrelid = c.conrelid
+WHERE c.conrelid = 'softbytecommerce.existencia_bodega'::regclass;
+
+
+ALTER TABLE softbytecommerce.existencia_bodega
+ADD PRIMARY KEY (bodega, articulo);
+
+
+ALTER TABLE softbytecommerce.existencia_bodega
+ADD CONSTRAINT fk_existencia_bodega_bodega
+FOREIGN KEY (bodega) REFERENCES softbytecommerce.bodegas(bodega)
+ON DELETE CASCADE;
+
+
+
+ALTER TABLE softbytecommerce.existencia_bodega
+ADD CONSTRAINT fk_existencia_bodega_articulo
+FOREIGN KEY (articulo) REFERENCES softbytecommerce.articulo(articulo)
+ON DELETE CASCADE;
+
+
+SELECT conname AS constraint_name, conrelid::regclass AS table_name, a.attname AS column_name
+FROM pg_constraint AS c
+JOIN pg_attribute AS a ON a.attnum = ANY(c.conkey) AND a.attrelid = c.conrelid
+WHERE c.conrelid = 'softbytecommerce.existencia_bodega'::regclass;
+
+
+SELECT * FROM softbytecommerce.existencia_bodega;
+
+
+

@@ -19,11 +19,13 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Articulo> Articulos { get; set; }
 
     public virtual DbSet<Bodega> Bodegas { get; set; }
+    public virtual DbSet<Categoria> Categorias { get; set; }
 
     public virtual DbSet<ExistenciaBodega> ExistenciaBodegas { get; set; }
 
     public virtual DbSet<ExistenciaLote> ExistenciaLotes { get; set; }
     public virtual DbSet<Regione> Regiones { get; set; }
+    public virtual DbSet<Subcategoria> Subcategorias { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
@@ -150,6 +152,38 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("updatedby");
         });
+
+        modelBuilder.Entity<Categoria>(entity =>
+        {
+            entity.HasKey(e => e.IdCategoria).HasName("categorias_pkey");
+
+            entity.ToTable("categorias", "softbytecommerce");
+
+            entity.HasIndex(e => e.Nombre, "categorias_nombre_key").IsUnique();
+
+            entity.Property(e => e.IdCategoria).HasColumnName("id_categoria");
+            entity.Property(e => e.CreateBy)
+                .HasMaxLength(255)
+                .HasColumnName("create_by");
+            entity.Property(e => e.Descripcion).HasColumnName("descripcion");
+            entity.Property(e => e.Estatus)
+                .HasDefaultValue(true)
+                .HasColumnName("estatus");
+            entity.Property(e => e.FechaActualizacion)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("fecha_actualizacion");
+            entity.Property(e => e.FechaCreacion)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(255)
+                .HasColumnName("nombre");
+            entity.Property(e => e.UpdateBy)
+                .HasMaxLength(255)
+                .HasColumnName("update_by");
+        });
+
+
 
         modelBuilder.Entity<ExistenciaBodega>(entity =>
         {
@@ -362,6 +396,39 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.TipoRegion)
                 .HasMaxLength(100)
                 .HasColumnName("tipo_region");
+        });
+
+        modelBuilder.Entity<Subcategoria>(entity =>
+        {
+            entity.HasKey(e => e.IdSubcategoria).HasName("subcategorias_pkey");
+
+            entity.ToTable("subcategorias", "softbytecommerce");
+
+            entity.Property(e => e.IdSubcategoria).HasColumnName("id_subcategoria");
+            entity.Property(e => e.CreateBy)
+                .HasMaxLength(255)
+                .HasColumnName("create_by");
+            entity.Property(e => e.Descripcion).HasColumnName("descripcion");
+            entity.Property(e => e.Estatus)
+                .HasDefaultValue(true)
+                .HasColumnName("estatus");
+            entity.Property(e => e.FechaActualizacion)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("fecha_actualizacion");
+            entity.Property(e => e.FechaCreacion)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.IdCategoria).HasColumnName("id_categoria");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(255)
+                .HasColumnName("nombre");
+            entity.Property(e => e.UpdateBy)
+                .HasMaxLength(255)
+                .HasColumnName("update_by");
+
+            entity.HasOne(d => d.IdCategoriaNavigation).WithMany(p => p.Subcategoria)
+                .HasForeignKey(d => d.IdCategoria)
+                .HasConstraintName("subcategorias_id_categoria_fkey");
         });
 
 

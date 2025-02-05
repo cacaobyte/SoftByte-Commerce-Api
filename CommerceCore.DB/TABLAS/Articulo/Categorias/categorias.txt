@@ -1,0 +1,25 @@
+##Tabla apra crear categorias y sub categorias
+
+CREATE TABLE softbytecommerce.categorias (
+    id_categoria SERIAL PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL UNIQUE,
+    descripcion TEXT,
+    estatus BOOLEAN NOT NULL DEFAULT TRUE,
+    create_by VARCHAR(255),
+    update_by VARCHAR(255),
+    fecha_creacion TIMESTAMP,
+    fecha_actualizacion TIMESTAMP
+);
+
+CREATE TABLE softbytecommerce.subcategorias (
+    id_subcategoria SERIAL PRIMARY KEY,
+    id_categoria INT NOT NULL,
+    nombre VARCHAR(255) NOT NULL,
+    descripcion TEXT,
+    estatus BOOLEAN NOT NULL DEFAULT TRUE,
+    create_by VARCHAR(255),
+    update_by VARCHAR(255),
+    fecha_creacion TIMESTAMP,
+    fecha_actualizacion TIMESTAMP,
+    FOREIGN KEY (id_categoria) REFERENCES softbytecommerce.categorias(id_categoria) ON DELETE CASCADE
+);
