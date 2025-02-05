@@ -25,11 +25,11 @@ CREATE TABLE softbytecommerce.Clientes (
     nacionalidad VARCHAR(50) NULL,
     profesion VARCHAR(100) NULL,
     empresa VARCHAR(100) NULL,
-    RecordDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Fecha de creación del registro
+    RecordDate TIMESTAMP NULL, -- Ahora es NULL para ser definido desde el backend
     CreateBy VARCHAR(50) NULL, -- Usuario que creó el registro
     UpdateBy VARCHAR(50) NULL, -- Usuario que actualizó el registro
-    CreateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Fecha de creación
-    UpdateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Última actualización
+    CreateDate TIMESTAMP NULL, -- Ahora es NULL para ser definido desde el backend
+    UpdateDate TIMESTAMP NULL, -- Ahora es NULL para ser definido desde el backend
     Moneda VARCHAR(10) NULL, -- Moneda en la que compra el cliente
     Descuento DECIMAL(5,2) DEFAULT 0.00 NULL, -- Porcentaje de descuento en compras
     Activo BOOLEAN DEFAULT TRUE, -- Cliente activo o inactivo
@@ -37,3 +37,4 @@ CREATE TABLE softbytecommerce.Clientes (
     notificar BOOLEAN DEFAULT FALSE, -- Indica si el cliente acepta notificaciones
     CONSTRAINT chk_edad CHECK (edad >= 0) -- Evita edades negativas
 );
+
