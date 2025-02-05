@@ -1,0 +1,13 @@
+##Triger para crear el correlativo del cliente
+
+DELIMITER //
+CREATE TRIGGER softbytecommerce.before_insert_client
+BEFORE INSERT ON softbytecommerce.Clientes
+FOR EACH ROW
+BEGIN
+    DECLARE new_id INT;
+    SELECT COALESCE(MAX(CAST(cliente AS UNSIGNED)), 0) + 1 INTO new_id FROM softbytecommerce.Clientes;
+    SET NEW.cliente = LPAD(new_id, 10, '0'); -- Rellenar con ceros hasta 10 dígitos
+END;
+//
+DELIMITER ;

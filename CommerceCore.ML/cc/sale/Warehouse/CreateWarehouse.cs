@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+
 namespace CommerceCore.ML.cc.sale.Warehouse
 {
     public class CreateWarehouse

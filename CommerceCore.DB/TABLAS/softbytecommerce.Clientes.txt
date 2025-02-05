@@ -1,0 +1,39 @@
+##Tabla para registrar a los clientes
+
+CREATE TABLE softbytecommerce.Clientes (
+    cliente VARCHAR(10) PRIMARY KEY NOT NULL UNIQUE, -- Código de cliente autoincrementable con 10 dígitos
+    primer_nombre VARCHAR(50) NOT NULL,
+    segundo_nombre VARCHAR(50) NULL,
+    tercer_nombre VARCHAR(50) NULL,
+    primer_apellido VARCHAR(50) NULL,
+    segundo_apellido VARCHAR(50) NULL,
+    cf BOOLEAN NULL, -- Indica si el cliente usa CF en su factura
+    DPI VARCHAR(20) NULL UNIQUE, -- Número de DPI del cliente
+    genero VARCHAR(20) NULL, -- Género del cliente
+    fecha_nacimiento DATE NULL,
+    celular VARCHAR(15) NULL,
+    email VARCHAR(100) NULL UNIQUE, -- Correo electrónico único
+    celular2 VARCHAR(15) NULL,
+    nit VARCHAR(15) NULL UNIQUE, -- Identificación fiscal
+    Nombre_factura VARCHAR(100) NULL, -- Nombre en la factura
+    Direccion VARCHAR(255) NULL,
+    colonia VARCHAR(100) NULL,
+    zona VARCHAR(10) NULL,
+    departamento VARCHAR(100) NULL,
+    municipio VARCHAR(100) NULL,
+    estado_civil VARCHAR(50) NULL, -- Ahora es VARCHAR en lugar de ENUM
+    nacionalidad VARCHAR(50) NULL,
+    profesion VARCHAR(100) NULL,
+    empresa VARCHAR(100) NULL,
+    RecordDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Fecha de creación del registro
+    CreateBy VARCHAR(50) NULL, -- Usuario que creó el registro
+    UpdateBy VARCHAR(50) NULL, -- Usuario que actualizó el registro
+    CreateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Fecha de creación
+    UpdateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Última actualización
+    Moneda VARCHAR(10) NULL, -- Moneda en la que compra el cliente
+    Descuento DECIMAL(5,2) DEFAULT 0.00 NULL, -- Porcentaje de descuento en compras
+    Activo BOOLEAN DEFAULT TRUE, -- Cliente activo o inactivo
+    edad INT NULL, -- Se puede calcular en base a `fecha_nacimiento`
+    notificar BOOLEAN DEFAULT FALSE, -- Indica si el cliente acepta notificaciones
+    CONSTRAINT chk_edad CHECK (edad >= 0) -- Evita edades negativas
+);

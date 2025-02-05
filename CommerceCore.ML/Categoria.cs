@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CommerceCore.DAL.Commerce.Models;
+namespace CommerceCore.ML;
 
 public partial class Categoria
 {
