@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CommerceCore.BL.cc.sale
+namespace CommerceCore.BL.cc.sale.Client
 {
-    internal class Client
+    public class Client
     {
     }
 }
