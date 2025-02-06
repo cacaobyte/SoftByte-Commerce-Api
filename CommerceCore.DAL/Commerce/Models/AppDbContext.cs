@@ -832,10 +832,10 @@ public partial class AppDbContext : DbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updatedate");
 
-            entity.HasOne(d => d.BodegaNavigation).WithMany(p => p.Vendedores)
+           /* entity.HasOne(d => d.BodegaNavigation).WithMany(p => p.Vendedores)
                 .HasForeignKey(d => d.Bodega)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("vendedores_bodega_fkey");
+                .HasConstraintName("vendedores_bodega_fkey");*/
         });
 
         OnModelCreatingPartial(modelBuilder);
