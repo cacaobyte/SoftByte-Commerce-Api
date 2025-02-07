@@ -1,0 +1,36 @@
+##Tabla para vendedores
+
+CREATE TABLE softbytecommerce.vendedores (
+    vendedor SERIAL PRIMARY KEY, -- ID autoincremental del vendedor
+    nombres VARCHAR(100) NULL, 
+    apellidos VARCHAR(100) NULL, 
+    bodega VARCHAR(10) REFERENCES softbytecommerce.bodegas(bodega) ON DELETE SET NULL, -- Ahora es VARCHAR en lugar de INT
+    nacionalidad VARCHAR(50) NULL, 
+    dpi VARCHAR(20) UNIQUE NULL, 
+    edad INT NULL CHECK (edad >= 18), 
+    telefono1 VARCHAR(15) NULL, 
+    telefono2 VARCHAR(15) NULL, 
+    correo VARCHAR(100) UNIQUE NULL, 
+    direccion VARCHAR(255) NULL, 
+    genero VARCHAR(20) NULL, 
+    fecha_nacimiento DATE NULL, 
+    fecha_ingreso DATE NULL, 
+    profesion VARCHAR(100) NULL, 
+    empresa VARCHAR(100) NULL, 
+    sueldo_base DECIMAL(10,2) NULL, 
+    comision DECIMAL(5,2) DEFAULT 0.00 NULL, 
+    meta_ventas DECIMAL(10,2) NULL, 
+    bono DECIMAL(10,2) NULL, 
+    horario_trabajo TEXT NULL, 
+    tipo_contrato VARCHAR(50) NULL, 
+    ultima_venta TIMESTAMP NULL, 
+    observaciones TEXT NULL, 
+    comentarios TEXT NULL, 
+    recordDate TIMESTAMP NULL, 
+    UpdateDate TIMESTAMP NULL, 
+    createBy VARCHAR(50) NULL, 
+    updateBy VARCHAR(50) NULL, 
+    estado VARCHAR(20) DEFAULT 'activo', 
+    Activo BOOLEAN DEFAULT TRUE, 
+    notificar BOOLEAN DEFAULT TRUE
+);

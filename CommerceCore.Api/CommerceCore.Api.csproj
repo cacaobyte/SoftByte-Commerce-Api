@@ -33,4 +33,8 @@
 		<ProjectReference Include="..\CommerceCore\CommerceCore.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Controllers\cc\sale\Client\" />
+	</ItemGroup>
+
 </Project>

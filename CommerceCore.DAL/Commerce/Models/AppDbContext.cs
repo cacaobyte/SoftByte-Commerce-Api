@@ -20,14 +20,20 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Bodega> Bodegas { get; set; }
     public virtual DbSet<Categoria> Categorias { get; set; }
+    public virtual DbSet<Cliente> Clientes { get; set; }
 
     public virtual DbSet<ExistenciaBodega> ExistenciaBodegas { get; set; }
 
     public virtual DbSet<ExistenciaLote> ExistenciaLotes { get; set; }
+    public virtual DbSet<Faq> Faqs { get; set; }
+
+    public virtual DbSet<Guia> Guias { get; set; }
     public virtual DbSet<Regione> Regiones { get; set; }
     public virtual DbSet<Subcategoria> Subcategorias { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
+    public virtual DbSet<Vendedore> Vendedores { get; set; }
+
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -153,6 +159,7 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("updatedby");
         });
 
+
         modelBuilder.Entity<Categoria>(entity =>
         {
             entity.HasKey(e => e.IdCategoria).HasName("categorias_pkey");
@@ -181,6 +188,118 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.UpdateBy)
                 .HasMaxLength(255)
                 .HasColumnName("update_by");
+        });
+
+
+        modelBuilder.Entity<Cliente>(entity =>
+        {
+            entity.HasKey(e => e.Cliente1).HasName("clientes_pkey");
+
+            entity.ToTable("clientes", "softbytecommerce");
+
+            entity.HasIndex(e => e.Dpi, "clientes_dpi_key").IsUnique();
+
+            entity.HasIndex(e => e.Email, "clientes_email_key").IsUnique();
+
+            entity.HasIndex(e => e.Nit, "clientes_nit_key").IsUnique();
+
+            entity.Property(e => e.Cliente1)
+                .HasMaxLength(10)
+                .HasColumnName("cliente");
+            entity.Property(e => e.Activo)
+                .HasDefaultValue(true)
+                .HasColumnName("activo");
+            entity.Property(e => e.Celular)
+                .HasMaxLength(15)
+                .HasColumnName("celular");
+            entity.Property(e => e.Celular2)
+                .HasMaxLength(15)
+                .HasColumnName("celular2");
+            entity.Property(e => e.Cf).HasColumnName("cf");
+            entity.Property(e => e.Colonia)
+                .HasMaxLength(100)
+                .HasColumnName("colonia");
+            entity.Property(e => e.Createby)
+                .HasMaxLength(50)
+                .HasColumnName("createby");
+            entity.Property(e => e.Createdate)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("createdate");
+            entity.Property(e => e.Departamento)
+                .HasMaxLength(100)
+                .HasColumnName("departamento");
+            entity.Property(e => e.Descuento)
+                .HasPrecision(5, 2)
+                .HasDefaultValueSql("0.00")
+                .HasColumnName("descuento");
+            entity.Property(e => e.Direccion)
+                .HasMaxLength(255)
+                .HasColumnName("direccion");
+            entity.Property(e => e.Dpi)
+                .HasMaxLength(20)
+                .HasColumnName("dpi");
+            entity.Property(e => e.Edad).HasColumnName("edad");
+            entity.Property(e => e.Email)
+                .HasMaxLength(100)
+                .HasColumnName("email");
+            entity.Property(e => e.Empresa)
+                .HasMaxLength(100)
+                .HasColumnName("empresa");
+            entity.Property(e => e.EstadoCivil)
+                .HasMaxLength(50)
+                .HasColumnName("estado_civil");
+            entity.Property(e => e.FechaNacimiento).HasColumnName("fecha_nacimiento");
+            entity.Property(e => e.Genero)
+                .HasMaxLength(20)
+                .HasColumnName("genero");
+            entity.Property(e => e.Moneda)
+                .HasMaxLength(10)
+                .HasColumnName("moneda");
+            entity.Property(e => e.Municipio)
+                .HasMaxLength(100)
+                .HasColumnName("municipio");
+            entity.Property(e => e.Nacionalidad)
+                .HasMaxLength(50)
+                .HasColumnName("nacionalidad");
+            entity.Property(e => e.Nit)
+                .HasMaxLength(15)
+                .HasColumnName("nit");
+            entity.Property(e => e.NombreFactura)
+                .HasMaxLength(100)
+                .HasColumnName("nombre_factura");
+            entity.Property(e => e.Notificar)
+                .HasDefaultValue(false)
+                .HasColumnName("notificar");
+            entity.Property(e => e.PrimerApellido)
+                .HasMaxLength(50)
+                .HasColumnName("primer_apellido");
+            entity.Property(e => e.PrimerNombre)
+                .HasMaxLength(50)
+                .HasColumnName("primer_nombre");
+            entity.Property(e => e.Profesion)
+                .HasMaxLength(100)
+                .HasColumnName("profesion");
+            entity.Property(e => e.Recorddate)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("recorddate");
+            entity.Property(e => e.SegundoApellido)
+                .HasMaxLength(50)
+                .HasColumnName("segundo_apellido");
+            entity.Property(e => e.SegundoNombre)
+                .HasMaxLength(50)
+                .HasColumnName("segundo_nombre");
+            entity.Property(e => e.TercerNombre)
+                .HasMaxLength(50)
+                .HasColumnName("tercer_nombre");
+            entity.Property(e => e.Updateby)
+                .HasMaxLength(50)
+                .HasColumnName("updateby");
+            entity.Property(e => e.Updatedate)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("updatedate");
+            entity.Property(e => e.Zona)
+                .HasMaxLength(10)
+                .HasColumnName("zona");
         });
 
 
@@ -368,6 +487,105 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("updatedby");
         });
 
+
+
+
+        modelBuilder.Entity<Faq>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("faqs_pkey");
+
+            entity.ToTable("faqs", "softbytecommerce");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ActualizadoPor)
+                .HasMaxLength(50)
+                .HasColumnName("actualizado_por");
+            entity.Property(e => e.Categoria)
+                .HasMaxLength(100)
+                .HasColumnName("categoria");
+            entity.Property(e => e.CreadoPor)
+                .HasMaxLength(50)
+                .HasColumnName("creado_por");
+            entity.Property(e => e.Estado)
+                .HasDefaultValue(true)
+                .HasColumnName("estado");
+            entity.Property(e => e.FechaActualizacion)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("fecha_actualizacion");
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.Importancia)
+                .HasDefaultValue(1)
+                .HasColumnName("importancia");
+            entity.Property(e => e.Keywords).HasColumnName("keywords");
+            entity.Property(e => e.Orden)
+                .HasDefaultValue(1)
+                .HasColumnName("orden");
+            entity.Property(e => e.Pregunta).HasColumnName("pregunta");
+            entity.Property(e => e.Respuesta).HasColumnName("respuesta");
+            entity.Property(e => e.Subcategoria)
+                .HasMaxLength(100)
+                .HasColumnName("subcategoria");
+            entity.Property(e => e.Visitas)
+                .HasDefaultValue(0)
+                .HasColumnName("visitas");
+        });
+
+        modelBuilder.Entity<Guia>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("guias_pkey");
+
+            entity.ToTable("guias", "softbytecommerce");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ActualizadoPor)
+                .HasMaxLength(50)
+                .HasColumnName("actualizado_por");
+            entity.Property(e => e.Archivo).HasColumnName("archivo");
+            entity.Property(e => e.Categoria)
+                .HasMaxLength(100)
+                .HasColumnName("categoria");
+            entity.Property(e => e.Contenido).HasColumnName("contenido");
+            entity.Property(e => e.CreadoPor)
+                .HasMaxLength(50)
+                .HasColumnName("creado_por");
+            entity.Property(e => e.Estado)
+                .HasDefaultValue(true)
+                .HasColumnName("estado");
+            entity.Property(e => e.FechaActualizacion)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("fecha_actualizacion");
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.Idioma)
+                .HasMaxLength(20)
+                .HasColumnName("idioma");
+            entity.Property(e => e.Importancia)
+                .HasDefaultValue(1)
+                .HasColumnName("importancia");
+            entity.Property(e => e.Keywords).HasColumnName("keywords");
+            entity.Property(e => e.Orden)
+                .HasDefaultValue(1)
+                .HasColumnName("orden");
+            entity.Property(e => e.Subcategoria)
+                .HasMaxLength(100)
+                .HasColumnName("subcategoria");
+            entity.Property(e => e.Titulo)
+                .HasMaxLength(255)
+                .HasColumnName("titulo");
+            entity.Property(e => e.UrlExterna).HasColumnName("url_externa");
+            entity.Property(e => e.Version)
+                .HasMaxLength(20)
+                .HasColumnName("version");
+            entity.Property(e => e.Visitas)
+                .HasDefaultValue(0)
+                .HasColumnName("visitas");
+        });
+
         modelBuilder.Entity<Regione>(entity =>
         {
             entity.HasKey(e => e.IdRegion).HasName("regiones_pkey");
@@ -516,6 +734,108 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Updatedby)
                 .HasMaxLength(50)
                 .HasColumnName("updatedby");
+        });
+
+
+        modelBuilder.Entity<Vendedore>(entity =>
+        {
+            entity.HasKey(e => e.Vendedor).HasName("vendedores_pkey");
+
+            entity.ToTable("vendedores", "softbytecommerce");
+
+            entity.HasIndex(e => e.Correo, "vendedores_correo_key").IsUnique();
+
+            entity.HasIndex(e => e.Dpi, "vendedores_dpi_key").IsUnique();
+
+            entity.Property(e => e.Vendedor).HasColumnName("vendedor");
+            entity.Property(e => e.Activo)
+                .HasDefaultValue(true)
+                .HasColumnName("activo");
+            entity.Property(e => e.Apellidos)
+                .HasMaxLength(100)
+                .HasColumnName("apellidos");
+            entity.Property(e => e.Bodega)
+                .HasMaxLength(10)
+                .HasColumnName("bodega");
+            entity.Property(e => e.Bono)
+                .HasPrecision(10, 2)
+                .HasColumnName("bono");
+            entity.Property(e => e.Comentarios).HasColumnName("comentarios");
+            entity.Property(e => e.Comision)
+                .HasPrecision(5, 2)
+                .HasDefaultValueSql("0.00")
+                .HasColumnName("comision");
+            entity.Property(e => e.Correo)
+                .HasMaxLength(100)
+                .HasColumnName("correo");
+            entity.Property(e => e.Createby)
+                .HasMaxLength(50)
+                .HasColumnName("createby");
+            entity.Property(e => e.Direccion)
+                .HasMaxLength(255)
+                .HasColumnName("direccion");
+            entity.Property(e => e.Dpi)
+                .HasMaxLength(20)
+                .HasColumnName("dpi");
+            entity.Property(e => e.Edad).HasColumnName("edad");
+            entity.Property(e => e.Empresa)
+                .HasMaxLength(100)
+                .HasColumnName("empresa");
+            entity.Property(e => e.Estado)
+                .HasMaxLength(20)
+                .HasDefaultValueSql("'activo'::character varying")
+                .HasColumnName("estado");
+            entity.Property(e => e.FechaIngreso).HasColumnName("fecha_ingreso");
+            entity.Property(e => e.FechaNacimiento).HasColumnName("fecha_nacimiento");
+            entity.Property(e => e.Genero)
+                .HasMaxLength(20)
+                .HasColumnName("genero");
+            entity.Property(e => e.HorarioTrabajo).HasColumnName("horario_trabajo");
+            entity.Property(e => e.MetaVentas)
+                .HasPrecision(10, 2)
+                .HasColumnName("meta_ventas");
+            entity.Property(e => e.Nacionalidad)
+                .HasMaxLength(50)
+                .HasColumnName("nacionalidad");
+            entity.Property(e => e.Nombres)
+                .HasMaxLength(100)
+                .HasColumnName("nombres");
+            entity.Property(e => e.Notificar)
+                .HasDefaultValue(true)
+                .HasColumnName("notificar");
+            entity.Property(e => e.Observaciones).HasColumnName("observaciones");
+            entity.Property(e => e.Profesion)
+                .HasMaxLength(100)
+                .HasColumnName("profesion");
+            entity.Property(e => e.Recorddate)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("recorddate");
+            entity.Property(e => e.SueldoBase)
+                .HasPrecision(10, 2)
+                .HasColumnName("sueldo_base");
+            entity.Property(e => e.Telefono1)
+                .HasMaxLength(15)
+                .HasColumnName("telefono1");
+            entity.Property(e => e.Telefono2)
+                .HasMaxLength(15)
+                .HasColumnName("telefono2");
+            entity.Property(e => e.TipoContrato)
+                .HasMaxLength(50)
+                .HasColumnName("tipo_contrato");
+            entity.Property(e => e.UltimaVenta)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("ultima_venta");
+            entity.Property(e => e.Updateby)
+                .HasMaxLength(50)
+                .HasColumnName("updateby");
+            entity.Property(e => e.Updatedate)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("updatedate");
+
+           /* entity.HasOne(d => d.BodegaNavigation).WithMany(p => p.Vendedores)
+                .HasForeignKey(d => d.Bodega)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("vendedores_bodega_fkey");*/
         });
 
         OnModelCreatingPartial(modelBuilder);
