@@ -1,0 +1,42 @@
+##Tablas de preguntas y soporte
+
+
+CREATE TABLE softbytecommerce.faqs (
+    id SERIAL PRIMARY KEY, -- ID autoincremental
+    pregunta TEXT NOT NULL, -- Pregunta frecuente
+    respuesta TEXT NOT NULL, -- Respuesta a la pregunta
+    categoria VARCHAR(100) NULL, -- Categoría de la pregunta
+    subcategoria VARCHAR(100) NULL, -- Subcategoría para mayor detalle
+    keywords TEXT NULL, -- Palabras clave para mejorar búsquedas
+    visitas INT DEFAULT 0, -- Cantidad de veces que se ha visto la FAQ
+    importancia INT DEFAULT 1 CHECK (importancia BETWEEN 1 AND 5), -- Nivel de importancia (1-5)
+    orden INT DEFAULT 1, -- Para ordenar la visualización en el frontend
+    estado BOOLEAN DEFAULT TRUE, -- Activo o inactivo
+    fecha_creacion TIMESTAMP DEFAULT NOW(), -- Fecha de creación
+    fecha_actualizacion TIMESTAMP NULL, -- Fecha de última actualización
+    creado_por VARCHAR(50) NULL, -- Usuario que creó el FAQ
+    actualizado_por VARCHAR(50) NULL -- Usuario que actualizó el FAQ
+);
+
+
+CREATE TABLE softbytecommerce.guias (
+    id SERIAL PRIMARY KEY, -- ID autoincremental
+    titulo VARCHAR(255) NOT NULL, -- Título de la guía
+    contenido TEXT NOT NULL, -- Contenido de la guía
+    categoria VARCHAR(100) NULL, -- Categoría de la guía
+    subcategoria VARCHAR(100) NULL, -- Subcategoría de la guía
+    keywords TEXT NULL, -- Palabras clave para mejorar búsqueda
+    url_externa TEXT NULL, -- URL externa si la guía está alojada en otro sitio
+    archivo TEXT NULL, -- Ruta del archivo PDF o documento asociado
+    visitas INT DEFAULT 0, -- Cantidad de veces vista la guía
+    importancia INT DEFAULT 1 CHECK (importancia BETWEEN 1 AND 5), -- Prioridad de la guía (1-5)
+    idioma VARCHAR(20) NULL, -- Idioma de la guía (es, en, fr, etc.)
+    version VARCHAR(20) NULL, -- Versión de la guía
+    orden INT DEFAULT 1, -- Orden de visualización en el frontend
+    estado BOOLEAN DEFAULT TRUE, -- Activo o inactivo
+    fecha_creacion TIMESTAMP DEFAULT NOW(), -- Fecha de creación
+    fecha_actualizacion TIMESTAMP NULL, -- Fecha de última actualización
+    creado_por VARCHAR(50) NULL, -- Usuario que creó la guía
+    actualizado_por VARCHAR(50) NULL -- Usuario que actualizó la guía
+);
+
