@@ -19,7 +19,7 @@ namespace CommerceCore.BL.cc.logistics.warehouse
             configuration = settings;
         }
 
-        public List<Categoria> GetListCategories(string userName)
+        public List<Categoria> GetListCategoriesActive(string userName)
         {
             try
             {
@@ -66,6 +66,92 @@ namespace CommerceCore.BL.cc.logistics.warehouse
                 throw new Exception(ex.Message);
             }
         }
+
+        public List<Categoria> GetListCategories(string userName)
+        {
+            try
+            {
+                using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
+                {
+                    var categories = new List<Categoria>();
+                    categories = db.Categorias
+                   .Select(c => new Categoria
+                   {
+                       IdCategoria = c.IdCategoria,
+                       Nombre = c.Nombre,
+                       Descripcion = c.Descripcion,
+                       Estatus = c.Estatus,
+                       CreateBy = c.CreateBy,
+                       UpdateBy = c.UpdateBy,
+                       FechaCreacion = c.FechaCreacion,
+                       FechaActualizacion = c.FechaActualizacion,
+
+                       // Incluye las subcategorías relacionadas
+                       Subcategoria = db.Subcategorias
+                           .Where(sc => sc.IdCategoria == c.IdCategoria)
+                           .Select(sc => new Subcategoria
+                           {
+                               IdSubcategoria = sc.IdSubcategoria,
+                               IdCategoria = sc.IdCategoria,
+                               Nombre = sc.Nombre,
+                               Descripcion = sc.Descripcion,
+                               Estatus = sc.Estatus,
+                               CreateBy = sc.CreateBy,
+                               UpdateBy = sc.UpdateBy,
+                               FechaCreacion = sc.FechaCreacion,
+                               FechaActualizacion = sc.FechaActualizacion
+                           }).ToList()
+                   })
+                   .ToList();
+
+                    return categories;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+
+
+        public bool UpdateCategory(Categoria categoriaEdit, string userName)
+        {
+            try
+            {
+                using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
+                {
+                    // Buscar la categoría por su ID
+                    var existingCategory = db.Categorias.FirstOrDefault(c => c.IdCategoria == categoriaEdit.IdCategoria);
+
+                    if (existingCategory == null)
+                    {
+                        throw new Exception("Categoría no encontrada.");
+                    }
+
+                    // Actualizar los campos
+                    existingCategory.Nombre = categoriaEdit.Nombre;
+                    existingCategory.Descripcion = categoriaEdit.Descripcion;
+                    existingCategory.Estatus = categoriaEdit.Estatus;
+
+                    // Actualizar los campos de auditoría
+                    existingCategory.UpdateBy = userName;
+                    existingCategory.FechaActualizacion = DateTime.Now;
+
+                    // Guardar los cambios en la base de datos
+                    db.SaveChanges();
+
+                    return true;  // Retornar true si la actualización fue exitosa
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al actualizar la categoría: {ex.Message}");
+            }
+        }
+
+
 
 
         public List<CategoriesList> GetListCategoriesSubCategories()

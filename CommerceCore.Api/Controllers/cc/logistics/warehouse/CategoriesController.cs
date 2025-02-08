@@ -19,6 +19,24 @@ namespace CommerceCore.Api.Controllers.cc.logistics.warehouse
         /// Devuelve las regiones existentes
         /// </summary>
         /// <returns></returns>
+        [HttpGet("categoriesActive")]
+        public IActionResult GetAllCategoriesActive()
+        {
+            try
+            {
+                var result = blCategories.GetListCategoriesActive(userName);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Devuelve las regiones existentes
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("categories")]
         public IActionResult GetAllCategories()
         {
@@ -51,6 +69,36 @@ namespace CommerceCore.Api.Controllers.cc.logistics.warehouse
             }
         }
 
+        /// <summary>
+        /// Actualiza una categoría existente
+        /// </summary>
+        /// <param name="categoriaEdit">Objeto con los datos de la categoría a actualizar</param>
+        /// <returns>Respuesta HTTP indicando el éxito o el error</returns>
+        [HttpPut("categoriesUpdate")]
+        public IActionResult UpdateCategory([FromBody] Categoria categoriaEdit)
+        {
+            if (categoriaEdit == null || categoriaEdit.IdCategoria <= 0)
+            {
+                return BadRequest("Datos de categoría inválidos.");
+            }
+
+            try
+            {
+                var result = blCategories.UpdateCategory(categoriaEdit, userName);
+                if (result)
+                {
+                    return Ok(new { message = "Categoría actualizada con éxito.", categoria = categoriaEdit });
+                }
+                else
+                {
+                   throw new Exception( $"No se pudo actualizar la categoría.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
 
         /// <summary>
