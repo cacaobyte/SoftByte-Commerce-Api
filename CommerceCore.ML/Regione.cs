@@ -18,4 +18,6 @@ public partial class Regione
     public bool Estatus { get; set; }
 
     public DateTime? FechaCreacion { get; set; }
+    public decimal latitud { get; set; }
+    public decimal longitud { get; set; }
 }

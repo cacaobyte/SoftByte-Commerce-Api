@@ -108,5 +108,39 @@ namespace CommerceCore.BL.cc.logistics.warehouse
             }
         
         }
+
+        public bool ToggleCategoryStatus(int idCategoria, string userName)
+        {
+            try
+            {
+                using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
+                {
+                    // Busca la categoría por su ID
+                    var category = db.Categorias.FirstOrDefault(c => c.IdCategoria == idCategoria);
+
+                    if (category == null)
+                    {
+                        throw new Exception("Categoría no encontrada.");
+                    }
+
+                    // Cambia el estado de la categoría
+                    category.Estatus = !category.Estatus;
+
+                    // Actualiza los campos de auditoría
+                    category.UpdateBy = userName;
+                    category.FechaActualizacion = DateTime.Now;
+
+                    // Guarda los cambios en la base de datos
+                    db.SaveChanges();
+
+                    return category.Estatus; 
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al cambiar el estado de la categoría: {ex.Message}");
+            }
+        }
+
     }
 }
