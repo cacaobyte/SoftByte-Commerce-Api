@@ -1,0 +1,45 @@
+CREATE TABLE softbytecommerce.regiones (
+    id_region SERIAL PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL UNIQUE,
+    codigo VARCHAR(50) UNIQUE NOT NULL, 
+    descripcion TEXT,
+    tipo_region VARCHAR(100) CHECK (tipo_region IN ('Urbana', 'Rural', 'Industrial', 'Comercial')),
+    estatus BOOLEAN NOT NULL DEFAULT TRUE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+UPDATE softbytecommerce.regiones 
+SET nombre = 'Región Norte', 
+    codigo = 'NORTE-001', 
+    descripcion = 'Región ubicada en la zona norte del país', 
+    tipo_region = 'Urbana' 
+WHERE id_region = 1;
+
+
+INSERT INTO softbytecommerce.regiones (nombre, codigo, descripcion, tipo_region) VALUES
+('Región Metropolitana', 'METRO-001', 'Área metropolitana de la Ciudad de Guatemala', 'Urbana'),
+('Región Nororiente', 'NORO-002', 'Zona nororiental del país, con influencia caribeña', 'Rural'),
+('Región Suroriente', 'SURO-003', 'Región cercana a la frontera con El Salvador', 'Comercial'),
+('Región Central', 'CENT-004', 'Centro del país con actividad económica diversificada', 'Industrial'),
+('Región Suroccidente', 'SUROCC-005', 'Zona costera con influencia agrícola y pesquera', 'Rural'),
+('Región Noroccidente', 'NOROCC-006', 'Zona montañosa con gran diversidad cultural', 'Rural'),
+('Región Petén', 'PETEN-007', 'Región de la selva guatemalteca con influencia maya', 'Rural');
+
+
+UPDATE softbytecommerce.regiones 
+SET latitud = 14.6349, longitud = -90.5069 WHERE nombre = 'Región Metropolitana';
+UPDATE softbytecommerce.regiones 
+SET latitud = 15.4745, longitud = -90.3231 WHERE nombre = 'Región Norte';
+UPDATE softbytecommerce.regiones 
+SET latitud = 15.1214, longitud = -89.5631 WHERE nombre = 'Región Nororiente';
+UPDATE softbytecommerce.regiones 
+SET latitud = 14.5211, longitud = -89.3103 WHERE nombre = 'Región Suroriente';
+UPDATE softbytecommerce.regiones 
+SET latitud = 14.6006, longitud = -90.4917 WHERE nombre = 'Región Central';
+UPDATE softbytecommerce.regiones 
+SET latitud = 14.5333, longitud = -91.6833 WHERE nombre = 'Región Suroccidente';
+UPDATE softbytecommerce.regiones 
+SET latitud = 15.3175, longitud = -91.4756 WHERE nombre = 'Región Noroccidente';
+UPDATE softbytecommerce.regiones 
+SET latitud = 16.9120, longitud = -89.8665 WHERE nombre = 'Región Petén';

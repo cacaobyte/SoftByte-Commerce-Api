@@ -51,5 +51,27 @@ namespace CommerceCore.Api.Controllers.cc.logistics.warehouse
             }
         }
 
+
+
+        /// <summary>
+        /// Alterna el estado de una categoría (activa/inactiva)
+        /// </summary>
+        /// <param name="idCategoria">ID de la categoría</param>
+        /// <returns>Estado actualizado de la categoría</returns>
+        [HttpPut("categories/toggleStatus/{idCategoria}")]
+        public IActionResult ToggleCategoryStatus(int idCategoria)
+        {
+            try
+            {
+                var result = blCategories.ToggleCategoryStatus(idCategoria, userName);
+                return Ok(new { idCategoria, nuevoEstatus = result });
+            }
+            catch (Exception ex)
+            {
+               throw new Exception(ex.Message);
+            }
+        }
+
+
     }
 }
