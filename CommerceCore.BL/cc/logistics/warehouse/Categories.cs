@@ -10,6 +10,7 @@ using CommerceCore.ML;
 using NuGet.Configuration;
 using CommerceCore.DAL.Commerce;
 using CommerceCore.ML.cc.sale.Warehouse;
+using CommerceCore.Api.Controllers.cc.logistics.warehouse;
 
 namespace CommerceCore.BL.cc.logistics.warehouse
 {
@@ -116,7 +117,7 @@ namespace CommerceCore.BL.cc.logistics.warehouse
 
 
 
-        public bool UpdateCategory(Categoria categoriaEdit, string userName)
+        public bool UpdateCategory(CategoriaEditDto categoriaEdit, string userName)
         {
             try
             {
@@ -130,10 +131,9 @@ namespace CommerceCore.BL.cc.logistics.warehouse
                         throw new Exception("Categoría no encontrada.");
                     }
 
-                    // Actualizar los campos
+                    // Actualizar los campos permitidos
                     existingCategory.Nombre = categoriaEdit.Nombre;
                     existingCategory.Descripcion = categoriaEdit.Descripcion;
-                    existingCategory.Estatus = categoriaEdit.Estatus;
 
                     // Actualizar los campos de auditoría
                     existingCategory.UpdateBy = userName;
@@ -142,7 +142,7 @@ namespace CommerceCore.BL.cc.logistics.warehouse
                     // Guardar los cambios en la base de datos
                     db.SaveChanges();
 
-                    return true;  // Retornar true si la actualización fue exitosa
+                    return true; // Retornar true si la actualización fue exitosa
                 }
             }
             catch (Exception ex)
@@ -151,6 +151,39 @@ namespace CommerceCore.BL.cc.logistics.warehouse
             }
         }
 
+
+        public bool CreateCategory(CategoriaCreateDto categoriaCreate, string userName)
+        {
+            try
+            {
+                using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
+                {
+                    // Crear una nueva instancia de la categoría
+                    var newCategory = new Categoria
+                    {
+                        Nombre = categoriaCreate.Nombre,
+                        Descripcion = categoriaCreate.Descripcion,
+                        Estatus = true,  // Asumimos que la categoría está activa al momento de crearla
+                        CreateBy = userName,
+                        UpdateBy = userName,
+                        FechaCreacion = DateTime.Now,
+                        FechaActualizacion = DateTime.Now
+                    };
+
+                    // Agregar la nueva categoría a la base de datos
+                    db.Categorias.Add(newCategory);
+
+                    // Guardar los cambios en la base de datos
+                    db.SaveChanges();
+
+                    return true;  // Retornar true si la creación fue exitosa
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al crear la categoría: {ex.Message}");
+            }
+        }
 
 
 
