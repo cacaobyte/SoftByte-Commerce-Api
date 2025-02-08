@@ -75,7 +75,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics.warehouse
         /// <param name="categoriaEdit">Objeto con los datos de la categoría a actualizar</param>
         /// <returns>Respuesta HTTP indicando el éxito o el error</returns>
         [HttpPut("categoriesUpdate")]
-        public IActionResult UpdateCategory([FromBody] Categoria categoriaEdit)
+        public IActionResult UpdateCategory([FromBody] CategoriaEditDto categoriaEdit)
         {
             if (categoriaEdit == null || categoriaEdit.IdCategoria <= 0)
             {
@@ -91,12 +91,43 @@ namespace CommerceCore.Api.Controllers.cc.logistics.warehouse
                 }
                 else
                 {
-                   throw new Exception( $"No se pudo actualizar la categoría.");
+                    return StatusCode(500, "No se pudo actualizar la categoría.");
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Crea una nueva categoría
+        /// </summary>
+        /// <param name="categoriaCreate">Objeto con los datos de la nueva categoría</param>
+        /// <returns>Respuesta HTTP indicando el éxito o el error</returns>
+        [HttpPost("createCategory")]
+        public IActionResult CreateCategory([FromBody] CategoriaCreateDto categoriaCreate)
+        {
+            if (categoriaCreate == null || string.IsNullOrWhiteSpace(categoriaCreate.Nombre))
+            {
+                return BadRequest("Datos de categoría inválidos. El campo 'Nombre' es obligatorio.");
+            }
+
+            try
+            {
+                var result = blCategories.CreateCategory(categoriaCreate, userName);
+                if (result)
+                {
+                    return Ok(new { message = "Categoría creada con éxito.", categoria = categoriaCreate });
+                }
+                else
+                {
+                    return StatusCode(500, "No se pudo crear la categoría.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al crear la categoría: {ex.Message}");
             }
         }
 
