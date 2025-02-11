@@ -38,6 +38,7 @@ namespace CommerceCore.ML.cc.sale
         /// </summary>
         public string? SubCategoria { get; set; }
         public string? Clasificacion { get; set; }
+        public string? userName { get; set; } = "";
 
         // public virtual ICollection<ExistenciaBodega> ExistenciaBodegas { get; set; } = new List<ExistenciaBodega>();
     }
