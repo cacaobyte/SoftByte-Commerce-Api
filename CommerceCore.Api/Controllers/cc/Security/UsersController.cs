@@ -1,7 +1,9 @@
 ﻿using CommerceCore.Api.Tools;
 using CommerceCore.BL.cc.Security;
 using CommerceCore.ML.cc.Security.Users;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace CommerceCore.Api.Controllers.cc.Security
 {
@@ -34,5 +36,31 @@ namespace CommerceCore.Api.Controllers.cc.Security
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
+
+
+        /// <summary>
+        /// Inicia sesión y genera un token JWT
+        /// </summary>
+        /// <param name="loginRequests">Objeto con el nombre de usuario/correo y contraseña</param>
+        /// <returns>Token JWT si la autenticación es exitosa</returns>
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] UserLoginRequest loginRequests)
+        {
+            string user = userName;
+            if (loginRequests == null || string.IsNullOrEmpty(loginRequests.UserNameOrEmail) || string.IsNullOrEmpty(loginRequests.Password))
+                return BadRequest("El nombre de usuario/correo y la contraseña son obligatorios.");
+
+            try
+            {
+                var token = blUsers.Login(loginRequests.UserNameOrEmail, loginRequests.Password);
+                return Ok(new { token });
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
+        }
+
+
     }
 }

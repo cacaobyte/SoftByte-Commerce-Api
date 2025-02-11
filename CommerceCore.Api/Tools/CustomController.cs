@@ -4,6 +4,7 @@ using CC.Configurations;
 using CommerceCore.Api.Attribute;
 using CommerceCore.Security;
 using CommerceCore.EL;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace CommerceCore.Api.Tools
 {
@@ -16,15 +17,30 @@ namespace CommerceCore.Api.Tools
         private UserInfo GetUserInfo()
         {
             string token = HttpContext.Request.Headers["Token"].ToString();
-            string appKey = HttpContext.Request.Headers["AppKey"].ToString();
-            if (!token.IsNull())
-            {
-                Dictionary<string, string> header = new Dictionary<string, string>();
-                header.Add("Token", token);
-                header.Add("AppKey", appKey);
-                //Configurar la seguridad para que regrese los datos del usuario de acuerdo a la sesion
 
+            if (!string.IsNullOrEmpty(token))
+            {
+                var handler = new JwtSecurityTokenHandler();
+
+                if (handler.CanReadToken(token))
+                {
+                    var jwtToken = handler.ReadJwtToken(token);
+
+                    var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "userId")?.Value;
+
+                    // Si tienes más información en el token, puedes extraerla aquí
+                    var userName = jwtToken.Claims.FirstOrDefault(c => c.Type == "unique_name")?.Value;
+
+                    // Retorna un objeto UserInfo personalizado
+                    return new UserInfo
+                    {
+                        Username = userName ?? "TestUser",
+                        Seller = "DefaultSeller", // Puedes agregar lógica para extraer otros datos del token si es necesario
+                        Store = "DefaultStore"
+                    };
+                }
             }
+
             return null;
         }
 

@@ -10,6 +10,9 @@ using CommerceCore.DAL.Commerce;
 using CommerceCore.ML.cc.Security.Users;
 using System.Security.Cryptography;
 using CommerceCore.ML;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 
 namespace CommerceCore.BL.cc.Security
@@ -30,6 +33,8 @@ namespace CommerceCore.BL.cc.Security
 
     public class Users : LogicBase
     {
+        private readonly string jwtSecret = "f9Jd83NgCkL7pR6tXmYqWv4Zs2H8oBtKyP5VcF1aM0XjTlNhGqW9";
+
         public Users(Configuration settings) {
             configuration = settings;
         }
@@ -113,6 +118,53 @@ namespace CommerceCore.BL.cc.Security
             return finalUserName;
         }
 
+        public string Login(string userNameOrEmail, string password)
+        {
+            try
+            {
+                using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
+                {
+                    // Encriptar la contraseña ingresada para comparar
+                    string encryptedPassword = password.EncryptPassword();
+
+                    // Buscar el usuario por userName o correo electrónico y verificar la contraseña
+                    var user = db.Usuarios.FirstOrDefault(u =>
+                        (u.userName == userNameOrEmail || u.CorreoElectronico == userNameOrEmail) &&
+                        u.Clave == encryptedPassword);
+
+                    if (user == null)
+                    {
+                        throw new Exception("Usuario o contraseña incorrectos.");
+                    }
+
+                    // Generar el token JWT
+                    return GenerateJwtToken(user);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al iniciar sesión: " + ex.Message);
+            }
+        }
+
+        private string GenerateJwtToken(Usuario user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(jwtSecret);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+            new Claim("userId", user.Usuario1) // Usar solo el identificador del usuario
+        }),
+                Expires = DateTime.UtcNow.AddHours(2),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
 
 
     }
