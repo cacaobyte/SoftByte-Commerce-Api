@@ -15,29 +15,175 @@ public partial class AppDbContext : DbContext
         : base(options)
     {
     }
+    public virtual DbSet<Accion> Accions { get; set; }
 
+    public virtual DbSet<Agrupador> Agrupadors { get; set; }
+
+    public virtual DbSet<Aplicacion> Aplicacions { get; set; }
+
+    public virtual DbSet<Aplicacionconfiguracion> Aplicacionconfiguracions { get; set; }
+
+    public virtual DbSet<Aplicacionhost> Aplicacionhosts { get; set; }
     public virtual DbSet<Articulo> Articulos { get; set; }
 
     public virtual DbSet<Bodega> Bodegas { get; set; }
     public virtual DbSet<Categoria> Categorias { get; set; }
     public virtual DbSet<Cliente> Clientes { get; set; }
+    public virtual DbSet<Empresa> Empresas { get; set; }
 
     public virtual DbSet<ExistenciaBodega> ExistenciaBodegas { get; set; }
 
     public virtual DbSet<ExistenciaLote> ExistenciaLotes { get; set; }
+    public virtual DbSet<Externaltoken> Externaltokens { get; set; }
     public virtual DbSet<Faq> Faqs { get; set; }
 
     public virtual DbSet<Guia> Guias { get; set; }
+
+    public virtual DbSet<Menu> Menus { get; set; }
+
+    public virtual DbSet<Opcion> Opcions { get; set; }
+
     public virtual DbSet<Regione> Regiones { get; set; }
+    public virtual DbSet<Rol> Rols { get; set; }
+
+    public virtual DbSet<Rolopcion> Rolopcions { get; set; }
+
+    public virtual DbSet<Rolopcionaccion> Rolopcionaccions { get; set; }
+
+    public virtual DbSet<Rolusuario> Rolusuarios { get; set; }
     public virtual DbSet<Subcategoria> Subcategorias { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
+
+    public virtual DbSet<Usuarioopcion> Usuarioopcions { get; set; }
+
+    public virtual DbSet<Usuarioopcionaccion> Usuarioopcionaccions { get; set; }
     public virtual DbSet<Vendedore> Vendedores { get; set; }
 
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        modelBuilder.Entity<Accion>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("accion_pkey");
+
+            entity.ToTable("accion", "softbytecommerce");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Activo).HasColumnName("activo");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(255)
+                .HasColumnName("nombre");
+            entity.Property(e => e.Opcion).HasColumnName("opcion");
+
+            entity.HasOne(d => d.OpcionNavigation).WithMany(p => p.Accions)
+                .HasForeignKey(d => d.Opcion)
+                .HasConstraintName("accion_opcion_fkey");
+        });
+
+        modelBuilder.Entity<Agrupador>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("agrupador_pkey");
+
+            entity.ToTable("agrupador", "softbytecommerce");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Activo).HasColumnName("activo");
+            entity.Property(e => e.Menu).HasColumnName("menu");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(255)
+                .HasColumnName("nombre");
+            entity.Property(e => e.Ordenmostrar).HasColumnName("ordenmostrar");
+            entity.Property(e => e.Pathicono)
+                .HasMaxLength(255)
+                .HasColumnName("pathicono");
+            entity.Property(e => e.Texto)
+                .HasMaxLength(255)
+                .HasColumnName("texto");
+
+            entity.HasOne(d => d.MenuNavigation).WithMany(p => p.Agrupadors)
+                .HasForeignKey(d => d.Menu)
+                .HasConstraintName("agrupador_menu_fkey");
+        });
+
+        modelBuilder.Entity<Aplicacion>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("aplicacion_pkey");
+
+            entity.ToTable("aplicacion", "softbytecommerce");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Accesstoken)
+                .HasMaxLength(255)
+                .HasColumnName("accesstoken");
+            entity.Property(e => e.Activo).HasColumnName("activo");
+            entity.Property(e => e.Appkey)
+                .HasMaxLength(255)
+                .HasColumnName("appkey");
+            entity.Property(e => e.Cookieexpire)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("cookieexpire");
+            entity.Property(e => e.Empresa).HasColumnName("empresa");
+            entity.Property(e => e.Interno).HasColumnName("interno");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(255)
+                .HasColumnName("nombre");
+
+            entity.HasOne(d => d.EmpresaNavigation).WithMany(p => p.Aplicacions)
+                .HasForeignKey(d => d.Empresa)
+                .HasConstraintName("aplicacion_empresa_fkey");
+        });
+
+        modelBuilder.Entity<Aplicacionconfiguracion>(entity =>
+        {
+            entity.HasKey(e => e.Aplicacion).HasName("aplicacionconfiguracion_pkey");
+
+            entity.ToTable("aplicacionconfiguracion", "softbytecommerce");
+
+            entity.Property(e => e.Aplicacion)
+                .ValueGeneratedNever()
+                .HasColumnName("aplicacion");
+            entity.Property(e => e.Cssclass)
+                .HasMaxLength(255)
+                .HasColumnName("cssclass");
+            entity.Property(e => e.Logo)
+                .HasMaxLength(255)
+                .HasColumnName("logo");
+            entity.Property(e => e.Mostrarnombreempresa).HasColumnName("mostrarnombreempresa");
+            entity.Property(e => e.Nombremostrar)
+                .HasMaxLength(255)
+                .HasColumnName("nombremostrar");
+            entity.Property(e => e.Textboton)
+                .HasMaxLength(255)
+                .HasColumnName("textboton");
+
+            entity.HasOne(d => d.AplicacionNavigation).WithOne(p => p.Aplicacionconfiguracion)
+                .HasForeignKey<Aplicacionconfiguracion>(d => d.Aplicacion)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("aplicacionconfiguracion_aplicacion_fkey");
+        });
+
+        modelBuilder.Entity<Aplicacionhost>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("aplicacionhost_pkey");
+
+            entity.ToTable("aplicacionhost", "softbytecommerce");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Aplicacion).HasColumnName("aplicacion");
+            entity.Property(e => e.Dominio)
+                .HasMaxLength(255)
+                .HasColumnName("dominio");
+
+            entity.HasOne(d => d.AplicacionNavigation).WithMany(p => p.Aplicacionhosts)
+                .HasForeignKey(d => d.Aplicacion)
+                .HasConstraintName("aplicacionhost_aplicacion_fkey");
+        });
+
+
+
         modelBuilder
             .HasPostgresEnum("auth", "aal_level", new[] { "aal1", "aal2", "aal3" })
             .HasPostgresEnum("auth", "code_challenge_method", new[] { "s256", "plain" })
@@ -302,7 +448,18 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("zona");
         });
 
+        modelBuilder.Entity<Empresa>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("empresa_pkey");
 
+            entity.ToTable("empresa", "softbytecommerce");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Activo).HasColumnName("activo");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(255)
+                .HasColumnName("nombre");
+        });
 
         modelBuilder.Entity<ExistenciaBodega>(entity =>
         {
@@ -489,6 +646,28 @@ public partial class AppDbContext : DbContext
 
 
 
+        modelBuilder.Entity<Externaltoken>(entity =>
+        {
+            entity.HasKey(e => new { e.Usuario, e.Llave }).HasName("externaltoken_pkey");
+
+            entity.ToTable("externaltoken", "softbytecommerce");
+
+            entity.Property(e => e.Usuario).HasColumnName("usuario");
+            entity.Property(e => e.Llave)
+                .HasMaxLength(255)
+                .HasColumnName("llave");
+            entity.Property(e => e.Activo).HasColumnName("activo");
+            entity.Property(e => e.Empresa).HasColumnName("empresa");
+            entity.Property(e => e.Expire)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("expire");
+
+         /*   entity.HasOne(d => d.EmpresaNavigation).WithMany(p => p.Externaltokens)
+                .HasForeignKey(d => d.Empresa)
+                .HasConstraintName("externaltoken_empresa_fkey");*/
+        });
+
+
 
         modelBuilder.Entity<Faq>(entity =>
         {
@@ -586,6 +765,57 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("visitas");
         });
 
+        modelBuilder.Entity<Menu>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("menu_pkey");
+
+            entity.ToTable("menu", "softbytecommerce");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Activo).HasColumnName("activo");
+            entity.Property(e => e.Aplicacion).HasColumnName("aplicacion");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(255)
+                .HasColumnName("nombre");
+
+            entity.HasOne(d => d.AplicacionNavigation).WithMany(p => p.Menus)
+                .HasForeignKey(d => d.Aplicacion)
+                .HasConstraintName("menu_aplicacion_fkey");
+        });
+
+        modelBuilder.Entity<Opcion>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("opcion_pkey");
+
+            entity.ToTable("opcion", "softbytecommerce");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Activo).HasColumnName("activo");
+            entity.Property(e => e.Agrupador).HasColumnName("agrupador");
+            entity.Property(e => e.Menu).HasColumnName("menu");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(255)
+                .HasColumnName("nombre");
+            entity.Property(e => e.Ordenmostrar).HasColumnName("ordenmostrar");
+            entity.Property(e => e.Pathicono)
+                .HasMaxLength(255)
+                .HasColumnName("pathicono");
+            entity.Property(e => e.Texto)
+                .HasMaxLength(255)
+                .HasColumnName("texto");
+            entity.Property(e => e.Url)
+                .HasMaxLength(255)
+                .HasColumnName("url");
+
+            entity.HasOne(d => d.AgrupadorNavigation).WithMany(p => p.Opcions)
+                .HasForeignKey(d => d.Agrupador)
+                .HasConstraintName("opcion_agrupador_fkey");
+
+            entity.HasOne(d => d.MenuNavigation).WithMany(p => p.Opcions)
+                .HasForeignKey(d => d.Menu)
+                .HasConstraintName("opcion_menu_fkey");
+        });
+
         modelBuilder.Entity<Regione>(entity =>
         {
             entity.HasKey(e => e.IdRegion).HasName("regiones_pkey");
@@ -615,6 +845,84 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("tipo_region");
         });
+
+        modelBuilder.Entity<Rol>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("rol_pkey");
+
+            entity.ToTable("rol", "softbytecommerce");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Activo).HasColumnName("activo");
+            entity.Property(e => e.Aplicacion).HasColumnName("aplicacion");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(255)
+                .HasColumnName("nombre");
+
+            entity.HasOne(d => d.AplicacionNavigation).WithMany(p => p.Rols)
+                .HasForeignKey(d => d.Aplicacion)
+                .HasConstraintName("rol_aplicacion_fkey");
+        });
+
+        modelBuilder.Entity<Rolopcion>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("rolopcion_pkey");
+
+            entity.ToTable("rolopcion", "softbytecommerce");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Opcion).HasColumnName("opcion");
+            entity.Property(e => e.Permitido).HasColumnName("permitido");
+            entity.Property(e => e.Rol).HasColumnName("rol");
+
+            entity.HasOne(d => d.OpcionNavigation).WithMany(p => p.Rolopcions)
+                .HasForeignKey(d => d.Opcion)
+                .HasConstraintName("rolopcion_opcion_fkey");
+
+            entity.HasOne(d => d.RolNavigation).WithMany(p => p.Rolopcions)
+                .HasForeignKey(d => d.Rol)
+                .HasConstraintName("rolopcion_rol_fkey");
+        });
+
+        modelBuilder.Entity<Rolopcionaccion>(entity =>
+        {
+            entity.HasKey(e => new { e.Rolopcion, e.Accion }).HasName("rolopcionaccion_pkey");
+
+            entity.ToTable("rolopcionaccion", "softbytecommerce");
+
+            entity.Property(e => e.Rolopcion).HasColumnName("rolopcion");
+            entity.Property(e => e.Accion).HasColumnName("accion");
+            entity.Property(e => e.Permitido).HasColumnName("permitido");
+
+            entity.HasOne(d => d.AccionNavigation).WithMany(p => p.Rolopcionaccions)
+                .HasForeignKey(d => d.Accion)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("rolopcionaccion_accion_fkey");
+
+            entity.HasOne(d => d.RolopcionNavigation).WithMany(p => p.Rolopcionaccions)
+                .HasForeignKey(d => d.Rolopcion)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("rolopcionaccion_rolopcion_fkey");
+        });
+
+        modelBuilder.Entity<Rolusuario>(entity =>
+        {
+            entity.HasKey(e => new { e.Rol, e.Usuario }).HasName("rolusuario_pkey");
+
+            entity.ToTable("rolusuario", "softbytecommerce");
+
+            entity.Property(e => e.Rol).HasColumnName("rol");
+            entity.Property(e => e.Usuario).HasColumnName("usuario");
+            entity.Property(e => e.Superusuario).HasColumnName("superusuario");
+
+            entity.HasOne(d => d.RolNavigation).WithMany(p => p.Rolusuarios)
+                .HasForeignKey(d => d.Rol)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("rolusuario_rol_fkey");
+        });
+
+
+
 
         modelBuilder.Entity<Subcategoria>(entity =>
         {
@@ -735,6 +1043,44 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("updatedby");
         });
+
+        modelBuilder.Entity<Usuarioopcion>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("usuarioopcion_pkey");
+
+            entity.ToTable("usuarioopcion", "softbytecommerce");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Opcion).HasColumnName("opcion");
+            entity.Property(e => e.Permitido).HasColumnName("permitido");
+            entity.Property(e => e.Usuario).HasColumnName("usuario");
+
+            entity.HasOne(d => d.OpcionNavigation).WithMany(p => p.Usuarioopcions)
+                .HasForeignKey(d => d.Opcion)
+                .HasConstraintName("usuarioopcion_opcion_fkey");
+        });
+
+        modelBuilder.Entity<Usuarioopcionaccion>(entity =>
+        {
+            entity.HasKey(e => new { e.Usuarioopcion, e.Accion }).HasName("usuarioopcionaccion_pkey");
+
+            entity.ToTable("usuarioopcionaccion", "softbytecommerce");
+
+            entity.Property(e => e.Usuarioopcion).HasColumnName("usuarioopcion");
+            entity.Property(e => e.Accion).HasColumnName("accion");
+            entity.Property(e => e.Permitido).HasColumnName("permitido");
+
+            entity.HasOne(d => d.AccionNavigation).WithMany(p => p.Usuarioopcionaccions)
+                .HasForeignKey(d => d.Accion)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("usuarioopcionaccion_accion_fkey");
+
+            entity.HasOne(d => d.UsuarioopcionNavigation).WithMany(p => p.Usuarioopcionaccions)
+                .HasForeignKey(d => d.Usuarioopcion)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("usuarioopcionaccion_usuarioopcion_fkey");
+        });
+
 
 
         modelBuilder.Entity<Vendedore>(entity =>

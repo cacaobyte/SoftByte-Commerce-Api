@@ -1,0 +1,134 @@
+-- Tabla Empresa
+CREATE TABLE softbytecommerce.Empresa (
+    Id SERIAL PRIMARY KEY,
+    Nombre VARCHAR(255) NOT NULL,
+    Activo BOOLEAN NOT NULL
+);
+
+-- Tabla Aplicacion
+CREATE TABLE softbytecommerce.Aplicacion (
+    Id SERIAL PRIMARY KEY,
+    AppKey VARCHAR(255) NOT NULL,
+    Empresa INT REFERENCES softbytecommerce.Empresa(Id),
+    Nombre VARCHAR(255) NOT NULL,
+    Activo BOOLEAN NOT NULL,
+    AccessToken VARCHAR(255),
+    CookieExpire TIMESTAMP,
+    Interno BOOLEAN
+);
+
+-- Tabla Menu
+CREATE TABLE softbytecommerce.Menu (
+    Id SERIAL PRIMARY KEY,
+    Aplicacion INT REFERENCES softbytecommerce.Aplicacion(Id),
+    Nombre VARCHAR(255) NOT NULL,
+    Activo BOOLEAN NOT NULL
+);
+
+-- Tabla Agrupador
+CREATE TABLE softbytecommerce.Agrupador (
+    Id SERIAL PRIMARY KEY,
+    Menu INT REFERENCES softbytecommerce.Menu(Id),
+    Nombre VARCHAR(255) NOT NULL,
+    Texto VARCHAR(255),
+    PathIcono VARCHAR(255),
+    OrdenMostrar INT,
+    Activo BOOLEAN NOT NULL
+);
+
+-- Tabla Opcion
+CREATE TABLE softbytecommerce.Opcion (
+    Id SERIAL PRIMARY KEY,
+    Menu INT REFERENCES softbytecommerce.Menu(Id),
+    Agrupador INT REFERENCES softbytecommerce.Agrupador(Id),
+    Nombre VARCHAR(255) NOT NULL,
+    Texto VARCHAR(255),
+    PathIcono VARCHAR(255),
+    Url VARCHAR(255),
+    OrdenMostrar INT,
+    Activo BOOLEAN NOT NULL
+);
+
+-- Tabla UsuarioOpcion
+CREATE TABLE softbytecommerce.UsuarioOpcion (
+    Id SERIAL PRIMARY KEY,
+    Usuario INT NOT NULL,
+    Opcion INT REFERENCES softbytecommerce.Opcion(Id),
+    Permitido BOOLEAN NOT NULL
+);
+
+-- Tabla Accion
+CREATE TABLE softbytecommerce.Accion (
+    Id SERIAL PRIMARY KEY,
+    Opcion INT REFERENCES softbytecommerce.Opcion(Id),
+    Nombre VARCHAR(255) NOT NULL,
+    Activo BOOLEAN NOT NULL
+);
+
+-- Tabla UsuarioOpcionAccion
+CREATE TABLE softbytecommerce.UsuarioOpcionAccion (
+    UsuarioOpcion INT REFERENCES softbytecommerce.UsuarioOpcion(Id),
+    Accion INT REFERENCES softbytecommerce.Accion(Id),
+    Permitido BOOLEAN NOT NULL,
+    PRIMARY KEY (UsuarioOpcion, Accion)
+);
+
+-- Tabla Rol
+CREATE TABLE softbytecommerce.Rol (
+    Id SERIAL PRIMARY KEY,
+    Aplicacion INT REFERENCES softbytecommerce.Aplicacion(Id),
+    Nombre VARCHAR(255) NOT NULL,
+    Activo BOOLEAN NOT NULL
+);
+
+-- Tabla RolOpcion
+CREATE TABLE softbytecommerce.RolOpcion (
+    Id SERIAL PRIMARY KEY,
+    Rol INT REFERENCES softbytecommerce.Rol(Id),
+    Opcion INT REFERENCES softbytecommerce.Opcion(Id),
+    Permitido BOOLEAN NOT NULL
+);
+
+-- Tabla RolOpcionAccion
+CREATE TABLE softbytecommerce.RolOpcionAccion (
+    RolOpcion INT REFERENCES softbytecommerce.RolOpcion(Id),
+    Accion INT REFERENCES softbytecommerce.Accion(Id),
+    Permitido BOOLEAN NOT NULL,
+    PRIMARY KEY (RolOpcion, Accion)
+);
+
+-- Tabla RolUsuario
+CREATE TABLE softbytecommerce.RolUsuario (
+    Rol INT REFERENCES softbytecommerce.Rol(Id),
+    Usuario INT NOT NULL,
+    SuperUsuario BOOLEAN NOT NULL,
+    PRIMARY KEY (Rol, Usuario)
+);
+
+-- Tabla ExternalToken
+CREATE TABLE softbytecommerce.ExternalToken (
+    Usuario INT NOT NULL,
+    Llave VARCHAR(255) NOT NULL,
+    Activo BOOLEAN NOT NULL,
+    Empresa INT REFERENCES softbytecommerce.Empresa(Id),
+    Expire TIMESTAMP,
+    PRIMARY KEY (Usuario, Llave)
+);
+
+-- Tabla AplicacionHost
+CREATE TABLE softbytecommerce.AplicacionHost (
+    Id SERIAL PRIMARY KEY,
+    Aplicacion INT REFERENCES softbytecommerce.Aplicacion(Id),
+    Dominio VARCHAR(255) NOT NULL
+);
+
+-- Tabla AplicacionConfiguracion
+CREATE TABLE softbytecommerce.AplicacionConfiguracion (
+    Aplicacion INT REFERENCES softbytecommerce.Aplicacion(Id),
+    Logo VARCHAR(255),
+    NombreMostrar VARCHAR(255),
+    CssClass VARCHAR(255),
+    TextBoton VARCHAR(255),
+    MostrarNombreEmpresa BOOLEAN,
+    PRIMARY KEY (Aplicacion)
+);

@@ -56,4 +56,5 @@ public partial class Usuario
     public DateTime? Recorddate { get; set; }
 
     public Guid? Rowpointer { get; set; }
+    public string? userName { get; set; } = "";
 }
