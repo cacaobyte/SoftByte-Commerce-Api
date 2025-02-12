@@ -156,7 +156,8 @@ namespace CommerceCore.BL.cc.Security
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-            new Claim("userId", user.Usuario1) // Usar solo el identificador del usuario
+            new Claim("userId", user.Usuario1),  // Identificador del usuario
+            new Claim("unique_name", user.userName)  // Nombre de usuario
         }),
                 Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -164,6 +165,30 @@ namespace CommerceCore.BL.cc.Security
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+
+        public Usuario GetUserByUserName(string userName)
+        {
+            try
+            {
+                using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
+                {
+                    // Buscar el usuario por su userName
+                    var user = db.Usuarios.FirstOrDefault(u => u.userName == userName);
+
+                    if (user == null)
+                    {
+                        throw new Exception($"Usuario con userName '{userName}' no encontrado.");
+                    }
+
+                    return user;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener la información del usuario: " + ex.Message);
+            }
         }
 
 

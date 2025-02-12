@@ -31,6 +31,7 @@ namespace CommerceCore.Api.Tools
                     // Si tienes más información en el token, puedes extraerla aquí
                     var userName = jwtToken.Claims.FirstOrDefault(c => c.Type == "unique_name")?.Value;
 
+
                     // Retorna un objeto UserInfo personalizado
                     return new UserInfo
                     {
