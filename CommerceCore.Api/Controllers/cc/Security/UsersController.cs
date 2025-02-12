@@ -61,6 +61,31 @@ namespace CommerceCore.Api.Controllers.cc.Security
             }
         }
 
+        /// <summary>
+        /// Obtiene la información del usuario basado en su userName.
+        /// </summary>
+        /// <returns>Información del usuario</returns>
+        [HttpGet("profile")]
+        public IActionResult GetUserProfile()
+        {
+            if (string.IsNullOrEmpty(userName))
+                return BadRequest("El userName es obligatorio.");
+
+            try
+            {
+                var user = blUsers.GetUserByUserName(userName);
+
+                if (user == null)
+                    return NotFound(new { message = $"Usuario con userName '{userName}' no encontrado." });
+
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+
 
     }
 }
