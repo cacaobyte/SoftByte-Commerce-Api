@@ -19,6 +19,7 @@ namespace CommerceCore.ML
         public string? PrimerApellido { get; set; }
 
         public string? SegundoApellido { get; set; }
+        public string? foto { get; set;  }
 
         public bool? Cf { get; set; }
 

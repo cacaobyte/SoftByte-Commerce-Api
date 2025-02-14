@@ -43,8 +43,8 @@ namespace CommerceCore.Api.Controllers.cc.logistics
         {
             try
             {
-                string warehouse = "B001";
-                var result = blArticles.GetArticlesWarehouse(warehouse);
+               
+                var result = blArticles.GetArticlesWarehouse(storeCode);
                 return Ok(result);
             }
             catch (Exception ex)
