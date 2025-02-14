@@ -30,6 +30,7 @@ namespace CommerceCore.Api.Tools
 
                     // Si tienes más información en el token, puedes extraerla aquí
                     var userName = jwtToken.Claims.FirstOrDefault(c => c.Type == "unique_name")?.Value;
+                    var warehouse = jwtToken.Claims.FirstOrDefault(C => C.Type == "celular")?.Value;
 
 
                     // Retorna un objeto UserInfo personalizado
@@ -37,7 +38,7 @@ namespace CommerceCore.Api.Tools
                     {
                         Username = userName ?? "TestUser",
                         Seller = "DefaultSeller", // Puedes agregar lógica para extraer otros datos del token si es necesario
-                        Store = "DefaultStore"
+                        Store = warehouse ?? "B001"
                     };
                 }
             }

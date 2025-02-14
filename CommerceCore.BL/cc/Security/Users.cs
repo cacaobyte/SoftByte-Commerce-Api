@@ -157,7 +157,8 @@ namespace CommerceCore.BL.cc.Security
                 Subject = new ClaimsIdentity(new[]
                 {
             new Claim("userId", user.Usuario1),  // Identificador del usuario
-            new Claim("unique_name", user.userName)  // Nombre de usuario
+            new Claim("unique_name", user.userName),  // Nombre de usuario
+            new Claim("celular", user.Celular ?? string.Empty)
         }),
                 Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
