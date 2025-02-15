@@ -114,7 +114,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics
 
 
         [HttpPost("crearArticulos")]
-        public IActionResult CreateArticle([FromForm] CreateArticle newArticleData, [FromForm] IFormFile imageFile)
+        public async Task<IActionResult> CreateArticle([FromForm] CreateArticle newArticleData, [FromForm] IFormFile imageFile)
         {
             try
             {
@@ -123,14 +123,15 @@ namespace CommerceCore.Api.Controllers.cc.logistics
                     return BadRequest("The article data is required.");
                 }
 
-                var createdArticle = blArticles.CreateArticle(newArticleData, imageFile, userName);
+                var createdArticle = await blArticles.CreateArticleAsync(newArticleData, imageFile, userName);
                 return Ok(createdArticle);
             }
             catch (Exception ex)
             {
-                throw new Exception( ex.Message );
+                return StatusCode(500, $"Error al crear el artículo: {ex.Message}");
             }
         }
+
 
 
 
