@@ -239,13 +239,13 @@ namespace CommerceCore.BL.cc.logistics
 
 
         /// <summary>
-        /// Crea un nuevo artículo con su información y sube la imagen a Cloudinary.
+        /// Crea un nuevo artículo con su información y sube la imagen a Cloudflare.
         /// </summary>
-        /// <param name="newArticle">El objeto Articulo que contiene la información del artículo.</param>
+        /// <param name="newArticleData">El objeto CreateArticle que contiene la información del artículo.</param>
         /// <param name="imageFile">El archivo de imagen enviado desde el frontend.</param>
         /// <param name="userName">El nombre del usuario que crea el artículo.</param>
         /// <returns>El artículo creado con su URL de imagen.</returns>
-        public Articulo CreateArticle(CreateArticle newArticleData, IFormFile imageFile, string userName)
+        public async Task<Articulo> CreateArticleAsync(CreateArticle newArticleData, IFormFile imageFile, string userName)
         {
             string folder = "SoftByte/Commerce/Articulos";
 
@@ -263,7 +263,6 @@ namespace CommerceCore.BL.cc.logistics
 
                     if (lastArticle != null)
                     {
-                        // Extraer el número del último código de artículo y sumarle 1
                         string lastCode = lastArticle.Articulo1.Substring(1);
                         if (int.TryParse(lastCode, out int lastNumber))
                         {
@@ -276,7 +275,7 @@ namespace CommerceCore.BL.cc.logistics
                     {
                         Articulo1 = newArticuloCode,
                         Descripcion = newArticleData.Descripcion,
-                        Foto = null, // Se asignará después si hay imagen
+                        Foto = null,
                         Categoria = newArticleData.Categoria,
                         Precio = newArticleData.Precio,
                         PesoNeto = newArticleData.PesoNeto,
@@ -289,25 +288,25 @@ namespace CommerceCore.BL.cc.logistics
                         Clasificacion = newArticleData.Clasificacion
                     };
 
-                    // 🔹 Subir imagen a Cloudinary si existe
+                    // 🔹 Subir imagen a Cloudflare si existe
                     if (imageFile != null && imageFile.Length > 0)
                     {
-                        string imageUrl = blUploadImages.UploadImage(imageFile, folder);
+                        string imageUrl = await blUploadImages.UploadImageToCloudflare(imageFile, newArticuloCode);
                         newArticulo.Foto = imageUrl;
                     }
 
-                    // 🔹 Guardar en la base de datos
                     db.Articulos.Add(newArticulo);
-                    db.SaveChanges();
+                    await db.SaveChangesAsync();
 
                     return newArticulo;
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception( ex.Message );
+                throw new Exception($"Error en CreateArticle: {ex.Message}");
             }
         }
+
 
 
 
