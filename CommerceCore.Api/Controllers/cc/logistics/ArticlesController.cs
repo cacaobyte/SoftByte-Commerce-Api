@@ -123,7 +123,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics
                     return BadRequest("The article data is required.");
                 }
 
-                var createdArticle = await blArticles.CreateArticleAsync(newArticleData, imageFile, userName);
+                var createdArticle = await blArticles.CreateArticleAsync(newArticleData, imageFile, userName, IdAplication);
                 return Ok(createdArticle);
             }
             catch (Exception ex)

@@ -22,7 +22,7 @@ namespace CommerceCore.BL.cc.logistics
         /// <param name="newWarehouse">Objeto con los datos de la bodega</param>
         /// <param name="userName">Usuario que crea la bodega</param>
         /// <returns>Mensaje de éxito o error</returns>
-        public string AddWarehouse(CreateWarehouse newWarehouse, string userName)
+        public string AddWarehouse(CreateWarehouse newWarehouse, string userName, int aplication)
         {
             try
             {
@@ -76,7 +76,8 @@ namespace CommerceCore.BL.cc.logistics
                         Bodegacentral = isCentralWarehouse,
                         Bodegasecundaria = isSecundaryWarehouse,
                         Region = newWarehouse.Region,
-                        Correo = newWarehouse.Correo
+                        Correo = newWarehouse.Correo,
+                        Aplicacion = aplication
                     };
 
                     // Agregar la nueva bodega a la base de datos

@@ -132,3 +132,14 @@ CREATE TABLE softbytecommerce.AplicacionConfiguracion (
     MostrarNombreEmpresa BOOLEAN,
     PRIMARY KEY (Aplicacion)
 );
+
+
+ALTER TABLE softbytecommerce.rolusuario 
+ALTER COLUMN usuario TYPE VARCHAR(50);
+
+ALTER TABLE softbytecommerce.rolusuario 
+ADD CONSTRAINT fk_usuario FOREIGN KEY (usuario) REFERENCES softbytecommerce.usuario(usuario);
+
+SELECT usuario 
+FROM softbytecommerce.rolusuario 
+WHERE usuario NOT IN (SELECT usuario FROM softbytecommerce.usuario);

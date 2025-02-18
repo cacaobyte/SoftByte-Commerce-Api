@@ -34,6 +34,8 @@ public partial class Bodega
     public string? Region { get; set; }
 
     public string? Correo { get; set; }
+    public int Aplicacion { get; set; }  // Relación con Aplicacion
+    public virtual Aplicacion AplicacionNavigation { get; set; } = null!;
 
     public virtual ICollection<ExistenciaBodega> ExistenciaBodegas { get; set; } = new List<ExistenciaBodega>();
 }
