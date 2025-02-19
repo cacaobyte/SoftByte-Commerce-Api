@@ -11,6 +11,7 @@ using CommerceCore.DAL.Commerce;
 using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using System.Security.Permissions;
 
+
 namespace CommerceCore.BL.cc.Security
 {
     public class ServiceSecurity : LogicBase
@@ -106,7 +107,7 @@ namespace CommerceCore.BL.cc.Security
         ///<param name="actionModel">
         ///Informacion de la nueva accion de seguridad para registrar
         ///</param>
-        public string CreateAction(SecurityActions actionModel)
+        public string CreateAction(SecurityActions actionModel, int aplication)
         {
             SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
 
@@ -119,7 +120,8 @@ namespace CommerceCore.BL.cc.Security
                     {
                         Opcion = actionModel.option,
                         Nombre = actionModel.name,
-                        Activo = true
+                        Activo = true,
+                        aplicacion = aplication
                     });
 
                     db.SaveChanges();
@@ -553,10 +555,10 @@ namespace CommerceCore.BL.cc.Security
             var result = db.Menus.Join(
                 db.Aplicacions,
                 menu => menu.Aplicacion,
-                aplicacion => aplication,
+                aplicacion => aplicacion.Id,
                 (menu, aplicacion) => new { menu, aplicacion }
             ).Where(o =>
-                o.menu.Activo.Equals(true)
+                o.menu.Activo.Equals(true) &&  o.menu.Aplicacion == aplication
             ).Select(x => new
             {
                 opcion = x.menu.Opcions,
@@ -568,6 +570,31 @@ namespace CommerceCore.BL.cc.Security
             return result;
         }
 
+        ///<summary>
+        ///Obtiene todos los menus regustrados en la db
+        ///</summary>
+        ///<return></return>
+        ///<param></param>
+        public dynamic GetAllMenus()
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            var result = db.Menus.Join(
+                db.Aplicacions,
+                menu => menu.Aplicacion,
+                aplicacion => aplicacion.Id,
+                (menu, aplicacion) => new { menu, aplicacion }
+            ).Where(o =>
+                o.menu.Activo.Equals(true) 
+            ).Select(x => new
+            {
+                opcion = x.menu.Opcions,
+                nombre = x.menu.Nombre,
+                aplicacion = x.aplicacion.Nombre,
+                idMenu = x.menu.Id
+            }
+            );
+            return result;
+        }
 
 
         ///<summary>
@@ -597,7 +624,7 @@ namespace CommerceCore.BL.cc.Security
         ///</summary>
         ///<return></return>
         ///<param></param>
-        public dynamic GetOptions()
+        public dynamic GetOptions(int aplication)
         {
             SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
             var result = db.Opcions.Join(
@@ -605,7 +632,9 @@ namespace CommerceCore.BL.cc.Security
                 opcion => opcion.Menu,
                 menu => menu.Id,
                 (opcion, menu) => new { opcion, menu }
-            ).Select(x => new
+            )
+            .Where( x => x.menu.Aplicacion == aplication)
+            .Select(x => new
             {
                 menu = x.menu.Nombre,
                 opcion = x.opcion.Nombre,
@@ -672,13 +701,407 @@ namespace CommerceCore.BL.cc.Security
 
 
 
+        ///<summary>
+        ///Obtiene todos las acciones registrados en la db
+        ///</summary>
+        ///<return></return>
+        ///<param></param>
+        public dynamic GetActions(int aplication)
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            var result = db.Accions.Join(
+                db.Opcions,
+                accion => accion.Opcion,
+                opcion => opcion.Id,
+                (accion, opcion) => new { accion, opcion }
+            )
+             .Where( x => x.accion.aplicacion == aplication)
+            .Select(x => new
+            {
+                accion = x.accion.Nombre,
+                opcion = x.opcion.Nombre,
+                idAccion = x.accion.Id,
+                estado = x.accion.Activo
+            }
+            ).OrderByDescending(e => e.idAccion);
+            return result;
+        }
+
+
+
+        ///<summary>
+        ///Obtiene todos los roles registrados en la db haciendo join con la tabla aplicacion para hacer distincion
+        ///</summary>
+        ///<return></return>
+        ///<param></param>
+        public dynamic GetUserOptions(int aplication)
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            var result = db.Usuarioopcions.Join(
+                db.Opcions,
+                usuarioOpcion => usuarioOpcion.Opcion,
+                opcion => opcion.Id,
+                (usuarioOpcion, opcion) => new { usuarioOpcion, opcion }
+            ).Join(
+                db.Menus,
+                UsuarioOpcion => UsuarioOpcion.opcion.Menu,
+                menu => menu.Id,
+                (usuarioOpcion, menu) => new { usuarioOpcion, menu }
+            ).Where(u =>
+                u.menu.Aplicacion == aplication)
+            .Select(x => new
+               {
+                   usuario = x.usuarioOpcion.usuarioOpcion.Usuario,
+                   opcion = x.usuarioOpcion.opcion.Nombre,
+                   idOpcion = x.usuarioOpcion.opcion.Id,
+                   idUsuarioOpcion = x.usuarioOpcion.usuarioOpcion.Id,
+                   userId = $"{x.usuarioOpcion.usuarioOpcion.Usuario}_{x.usuarioOpcion.usuarioOpcion.Id}",
+                   nombreMostrar = $"{x.usuarioOpcion.opcion.Nombre} - usuario: {x.usuarioOpcion.usuarioOpcion.Usuario} - menú: {x.menu.Nombre}",
+                   claveVista = $"{x.usuarioOpcion.opcion.Nombre} - menú: {x.menu.Nombre}",
+                   parent = x.usuarioOpcion.usuarioOpcion.Usuario,
+                   selected = x.usuarioOpcion.usuarioOpcion.Permitido
+               }
+            ).OrderBy(e => e.usuario);
+            return result;
+        }
+
+
+        ///<summary>
+        ///Obtiene todos los roles asignados a un usuario por su ID
+        ///</summary>
+        ///<return></return>
+        ///<param>userId</param>
+        public dynamic GetRolesByUserId(string userId)
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            var result = db.Rolusuarios.Join(
+                db.Rols,
+                rolUsuario => rolUsuario.Rol,
+                rol => rol.Id,
+                (rolUsuario, rol) => new { rolUsuario, rol }
+            ).Where(o =>
+                o.rolUsuario.Usuario.Equals(userId)
+            ).Select(x => new
+            {
+                rolName = x.rol.Nombre,
+                rolId = x.rol.Id,
+                aplicacion = x.rol.Aplicacion,
+                estado = x.rol.Activo
+            }
+            );
+            return result;
+        }
+
+
+        ///<summary>
+        ///Obtiene todos los roles asignados a un usuario por su ID
+        ///</summary>
+        ///<return></return>
+        ///<param>userId</param>
+        public dynamic GetOptionsByUserId(string userId)
+        {
+
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            var result = db.Usuarioopcions.Join(
+                db.Opcions,
+                usuariOpcion => usuariOpcion.Opcion,
+                opcion => opcion.Id,
+                (usuariOpcion, opcion) => new { usuariOpcion, opcion }
+            )
+            .Where(o =>
+                o.usuariOpcion.Usuario.Equals(userId)
+            ).Select(x => new
+            {
+                optionName = x.opcion.Nombre,
+                optionId = x.opcion.Id,
+                menu = x.opcion.Menu,
+                estado = x.opcion.Activo,
+                permitido = x.usuariOpcion.Permitido
+            }
+            ).ToArray();
+
+            return result;
+        }
+
+
+
+        ///<summary>
+        ///Obtiene todos los usuarios con algun rol asignado
+        ///</summary>
+        ///<return></return>
+        ///<param>userId</param>
+        public dynamic GetUsersWithRole(int aplication)
+        {
+
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+
+            var result = db.Rolusuarios
+                .Join(db.Usuarios, r => r.Usuario, u => u.Usuario1, (r, u) => new {r, u})
+                .Where( x => x.u.Aplicacion == aplication )
+            .GroupBy(c => c.r.Usuario)
+            .Select(x => new
+            {
+                user = x.First().u.Usuario1
+            }
+            );
+            return result;
+        }
+
+
+
+
+        ///<summary>
+        ///Obtiene todos los usuarios con algun rol asignado
+        ///</summary>
+        ///<return></return>
+        ///<param>userId</param>
+        public dynamic GetRoleUsers( int aplication)
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+
+            var result = db.Rolusuarios
+            .Join(
+                db.Rols,
+                rolUser => rolUser.Rol,
+                rol => rol.Id,
+                (rolUser, rol) => new { rolUser, rol })
+            .Where( x => x.rol.Aplicacion == aplication)
+            .Select(x => new
+            {
+                idRol = x.rolUser.Rol,
+                usuario = x.rolUser.Usuario,
+                claveVista = x.rol.Nombre,
+                selected = true
+            }
+            );
+            return result;
+        }
+
+
+        ///<summary>
+        ///Obtiene todos los usuarios con alguna opcion asignada
+        ///</summary>
+        ///<return></return>
+        ///<param>userId</param>
+        public dynamic GetUsersWithOptions(int aplication)
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            var result = db.Usuarioopcions
+                .Join(db.Usuarios,
+                      o => o.Usuario,
+                      u => u.Usuario1,
+                      (o, u) => new { o, u })
+                .Where(x => x.u.Aplicacion == aplication)
+                .GroupBy(c => c.u.Usuario1) 
+                .Select(x => new
+                {
+                    user = x.First().u.Usuario1  
+                });
+            return result;
+        }
+
+
+
+        ///<summary>
+        ///Obtiene todas las relaciones rol-opcion 
+        ///</summary>
+        ///<return></return>
+        ///<param></param>
+        public dynamic GetRoleOptions(int aplication)
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            var result = db.Rolopcions
+            .Join(
+                db.Rols,
+                rolOpcion => rolOpcion.Rol,
+                rol => rol.Id,
+                (rolOpcion, rol) => new { rolOpcion, rol }
+            )
+            .Join(
+                db.Opcions,
+                rolOpcion => rolOpcion.rolOpcion.Opcion,
+                opcion => opcion.Id,
+                (rolOpcion, opcion) => new { rolOpcion, opcion }
+            )
+            .Join(
+                db.Aplicacions,
+                opcion => opcion.rolOpcion.rol.Aplicacion,
+                aplicacion => aplicacion.Id,
+                (opcion, aplicacion) => new { opcion, aplicacion }
+            )
+            .Where( x => x.aplicacion.Id == aplication)
+            .Select(x => new
+            {
+                roleOptionId = x.opcion.rolOpcion.rolOpcion.Id,
+                rol = x.opcion.rolOpcion.rol.Nombre,
+                option = x.opcion.opcion.Nombre,
+                aplication = x.aplicacion.Nombre
+            }
+            ).OrderByDescending(e => e.roleOptionId);
+
+            return result;
+        }
+
+
+        ///<summary>
+        ///Obtiene todas las relaciones usuario-opcion-accion
+        ///</summary>
+        ///<return></return>
+        ///<param></param>
+        public dynamic GetUserOptionActions(int aplication)
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            var result = db.Usuarioopcionaccions
+            .Join(
+                db.Usuarioopcions,
+                usuarioOpcionAccion => usuarioOpcionAccion.Usuarioopcion,
+                UsuarioOpcion => UsuarioOpcion.Id,
+                (usuarioOpcionAccion, UsuarioOpcion) => new { usuarioOpcionAccion, UsuarioOpcion }
+            )
+            .Join(
+                db.Accions,
+                uoa => uoa.usuarioOpcionAccion.Accion,
+                accion => accion.Id,
+                (uoa, accion) => new { uoa, accion }
+            )
+            .Join(
+                db.Opcions,
+                uoa => uoa.uoa.UsuarioOpcion.Opcion,
+                opcion => opcion.Id,
+                (uoa, opcion) => new { uoa, opcion }
+            )
+            .Join(
+                db.Menus,
+                uoa => uoa.opcion.Menu,
+                menu => menu.Id,
+                (uoa, menu) => new { uoa, menu }
+            )
+            .Where( x => x.menu.Aplicacion == aplication)
+            .Select(x => new
+            {
+                nombreUsuario = x.uoa.uoa.uoa.UsuarioOpcion.Usuario,
+                opcion = x.uoa.opcion.Nombre,
+                accion = x.uoa.uoa.accion.Nombre,
+                usuarioOpcionId = x.uoa.uoa.uoa.UsuarioOpcion.Id,
+                accionId = x.uoa.uoa.accion.Id,
+                menu = x.menu.Nombre,
+                usuario = $"{x.uoa.uoa.uoa.UsuarioOpcion.Usuario}_{x.uoa.uoa.uoa.UsuarioOpcion.Id}",
+                claveVista = x.uoa.uoa.accion.Nombre,
+                selected = x.uoa.uoa.uoa.usuarioOpcionAccion.Permitido
+            }
+            );
+            return result;
+        }
+
+
+
+
+        ///<summary>
+        ///Eliminar Rol-Opcion por medio de su id
+        ///</summary>
+        ///<return></return>
+        ///<param name="roleOptionId">
+        ///Informacion del rol de seguridad para actualizar
+        ///</param>
+        public dynamic DeleteRoleOption(int roleOptionId)
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+
+            try
+            {
+                var rolOption = db.Rolopcions.FirstOrDefault(x => x.Id.Equals(roleOptionId));
+                // ELIMINACION DE ROL-OPCION
+                if (rolOption != null)
+                {
+                    db.Rolopcions.Remove(rolOption);
+                    db.SaveChanges();
+                    return new
+                    {
+                        result = "Registro exitoso",
+                        message = String.Format("Rol-Opcion {0} eliminado satisfactoriamente", roleOptionId)
+                    };
+                };
+                return new
+                {
+                    result = "Registro existente",
+                    message = String.Format("No se pudo eliminar la asignación Rol-Opcion {0} debido a que no existe", roleOptionId)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"No se pudo actualizar el usuario {roleOptionId} Error: " + ex.Message);
+            }
+        }
 
 
 
 
 
+        ///<summary>
+        ///Eliminar Rol-Usuario
+        ///</summary>
+        ///<return></return>
+        ///<param name="roleOptionId">
+        ///Informacion del rol de seguridad para actualizar
+        ///</param>
+        public dynamic DeleteRolUser(int roleId, string userId)
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+
+            try
+            {
+                var roleUser = db.Rolusuarios.FirstOrDefault(x => x.Rol == roleId && x.Usuario.Equals(userId));
+                // ELIMINACION DE ROL-OPCION
+                if (roleUser != null)
+                {
+                    db.Rolusuarios.Remove(roleUser);
+                    db.SaveChanges();
+                    return new
+                    {
+                        result = "Registro exitoso",
+                        message = String.Format("Rol {0} desasignado a Usuario {1} de forma exitosa", roleId, userId)
+                    };
+                };
+                return new
+                {
+                    result = "Registro no existente",
+                    message = String.Format("No se pudo desasignar el rol {0} al usuario {1} debido a que no existe", roleId, userId)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(String.Format("No se pudo desasignar el rol {0} al usuario {1} debido a que no existe la asignación ", roleId, userId) + "Error: " + ex.Message);
+            }
+        }
 
 
+
+
+        ///<summary>
+        ///Consultar opciones del usuario por usuario
+        ///</summary>
+        ///<return></return>
+        ///<param name="user">
+        ///</param>
+        public List<ItemsToPermission> GetUserOption(string user)
+        {
+            List<ItemsToPermission> lstPermissions = new List<ItemsToPermission>();
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            lstPermissions = db.Usuarioopcions.Join(
+                db.Opcions,
+                usuarioOpcion => usuarioOpcion.Opcion,
+                opcion => opcion.Id,
+                (usuarioOpcion, opcion) => new { usuarioOpcion, opcion }
+            ).Where(u =>
+                u.usuarioOpcion.Usuario.Equals(user)
+            ).Select(x => new ItemsToPermission
+            {
+                usuario = x.usuarioOpcion.Usuario,
+                opcion = x.opcion.Nombre
+            }
+            ).ToList();
+            return lstPermissions;
+        }
 
 
 

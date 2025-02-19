@@ -150,3 +150,14 @@ ALTER TABLE softbytecommerce.usuarioopcion
 ALTER COLUMN usuario TYPE VARCHAR(255);
 
 
+ALTER TABLE softbytecommerce.accion 
+ADD COLUMN aplicacion INT;
+
+ALTER TABLE softbytecommerce.usuarioopcion 
+ALTER COLUMN usuario TYPE VARCHAR(255);
+
+ALTER TABLE softbytecommerce.accion 
+ADD COLUMN aplicacion INT;
+
+ALTER TABLE softbytecommerce.opcion 
+ADD COLUMN aplicacion INT;
