@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CommerceCore.Security
 {
@@ -13,6 +9,10 @@ namespace CommerceCore.Security
         public string? Store { get; set; }
         public string? Email { get; set; }
         public string? CompleteName { get; set; }
+        public int? ApplicationId { get; set; }  // Cambio de string? a int?
+        public bool RequiresPasswordChange { get; set; } // Indica si el usuario debe cambiar la contraseña
+        public string? LastPasswordChangeDate { get; set; } // Última fecha de cambio de clave
+        public string? UserType { get; set; } // Tipo de usuario (Administrador, Usuario, etc.)
+        public bool IsActive { get; set; } // Si el usuario está activo
     }
 }
-

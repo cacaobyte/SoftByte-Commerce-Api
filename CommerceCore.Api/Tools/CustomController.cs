@@ -27,24 +27,71 @@ namespace CommerceCore.Api.Tools
                     var jwtToken = handler.ReadJwtToken(token);
 
                     var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "userId")?.Value;
-
-                    // Si tienes más información en el token, puedes extraerla aquí
                     var userName = jwtToken.Claims.FirstOrDefault(c => c.Type == "unique_name")?.Value;
-                    var warehouse = jwtToken.Claims.FirstOrDefault(C => C.Type == "celular")?.Value;
+                    var warehouse = jwtToken.Claims.FirstOrDefault(c => c.Type == "celular")?.Value;
+                    var aplication = jwtToken.Claims.FirstOrDefault(c => c.Type == "aplication")?.Value;
+                    int applicationId = int.TryParse(aplication, out int appId) ? appId : 0;
+                    var reqCambioClave = jwtToken.Claims.FirstOrDefault(c => c.Type == "reqCambioClave")?.Value;
+                    var fechaUltClave = jwtToken.Claims.FirstOrDefault(c => c.Type == "fechaUltClave")?.Value;
+                    var correo = jwtToken.Claims.FirstOrDefault(c => c.Type == "correo")?.Value;
+                    var tipoUsuario = jwtToken.Claims.FirstOrDefault(c => c.Type == "tipoUsuario")?.Value;
+                    var activo = jwtToken.Claims.FirstOrDefault(c => c.Type == "activo")?.Value;
 
-
-                    // Retorna un objeto UserInfo personalizado
+                    // Retorna un objeto UserInfo personalizado con los nuevos valores
                     return new UserInfo
                     {
                         Username = userName ?? "TestUser",
-                        Seller = "DefaultSeller", // Puedes agregar lógica para extraer otros datos del token si es necesario
-                        Store = warehouse ?? "B001"
+                        Seller = "DefaultSeller",
+                        Store = warehouse ?? "B001",
+                        ApplicationId = applicationId, // Se almacena como entero
+                        RequiresPasswordChange = reqCambioClave == "True",
+                        LastPasswordChangeDate = fechaUltClave ?? "",
+                        Email = correo ?? "",
+                        UserType = tipoUsuario ?? "Usuario",
+                        IsActive = activo == "True"
                     };
                 }
             }
 
             return null;
         }
+
+        /// <summary>
+        /// type del usuario
+        /// </summary>
+        public string Active
+        {
+            get
+            {
+                UserInfo userInfo = GetUserInfo();
+                return userInfo == null ? "false" : userInfo.IsActive.ToString();
+            }
+        }
+
+        /// <summary>
+        /// type del usuario
+        /// </summary>
+        public string Usertype
+        {
+            get
+            {
+                UserInfo userInfo = GetUserInfo();
+                return userInfo == null ? "Usuario" : userInfo.UserType;
+            }
+        }
+
+        /// <summary>
+        /// ID de la aplicación a la cual pertenece el usuario
+        /// </summary>
+        public int IdAplication
+        {
+            get
+            {
+                UserInfo userInfo = GetUserInfo();
+                return userInfo?.ApplicationId ?? 0; // Si es nulo, devuelve 0
+            }
+        }
+
 
         /// <summary>
         /// Nombre de usuario conectado al api

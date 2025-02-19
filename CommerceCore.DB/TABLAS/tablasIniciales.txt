@@ -215,4 +215,20 @@ WHERE c.conrelid = 'softbytecommerce.existencia_bodega'::regclass;
 SELECT * FROM softbytecommerce.existencia_bodega;
 
 
+##Conextar bodega con aplicacion
+ALTER TABLE SoftByteCommerce.Bodegas 
+ADD COLUMN aplicacion INT;
 
+-- Actualiza las filas existentes con un valor por defecto (por ejemplo, la ID de una aplicación existente)
+UPDATE SoftByteCommerce.Bodegas 
+SET aplicacion = 1; -- Cambia 1 por el ID de la aplicación que deseas asignar por defecto
+
+-- Modifica la columna para que sea `NOT NULL`
+ALTER TABLE SoftByteCommerce.Bodegas 
+ALTER COLUMN aplicacion SET NOT NULL;
+
+-- Agrega la restricción de clave foránea
+ALTER TABLE SoftByteCommerce.Bodegas
+ADD CONSTRAINT fk_bodegas_aplicacion FOREIGN KEY (aplicacion) 
+REFERENCES SoftByteCommerce.Aplicacion (id)
+ON DELETE CASCADE;

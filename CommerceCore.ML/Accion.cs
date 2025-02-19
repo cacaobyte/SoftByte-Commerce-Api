@@ -15,6 +15,7 @@ namespace CommerceCore.ML
         public string Nombre { get; set; } = null!;
 
         public bool Activo { get; set; }
+        public int? aplicacion { get; set; }
 
         public virtual Opcion? OpcionNavigation { get; set; }
 

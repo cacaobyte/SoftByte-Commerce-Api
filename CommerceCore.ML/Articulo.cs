@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommerceCore.ML;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -37,6 +38,9 @@ public partial class Articulo
     /// </summary>
     public string? SubCategoria { get; set; }
     public string? Clasificacion { get; set; }
+    public int Aplicacion { get; set; }
+
+    public virtual Aplicacion AplicacionNavigation { get; set; } = null!;
 
     // public virtual ICollection<ExistenciaBodega> ExistenciaBodegas { get; set; } = new List<ExistenciaBodega>();
 }
