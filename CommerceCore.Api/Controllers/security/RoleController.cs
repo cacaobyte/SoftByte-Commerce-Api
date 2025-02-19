@@ -24,7 +24,7 @@ namespace CommerceCore.Api.Controllers.security
             try
             {
 
-                return Ok(JsonSerializer.Serialize(blServiceSecurity.GetRoles(IdAplication)));
+                return Ok(blServiceSecurity.GetRoles(IdAplication));
             }
             catch (Exception ex)
             {
