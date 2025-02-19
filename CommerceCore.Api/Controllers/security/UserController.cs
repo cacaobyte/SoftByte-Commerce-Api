@@ -29,7 +29,7 @@ namespace CommerceCore.Api.Controllers.security
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al obtener los roles del usuario {ex}");
+                throw new Exception($"Error al obtener los ususarios de la aplicacion {ex}");
             }
         }
     }
