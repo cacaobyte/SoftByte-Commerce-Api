@@ -250,6 +250,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Volumen)
                 .HasPrecision(10, 2)
                 .HasColumnName("volumen");
+            entity.Property(e => e.Aplicacion).HasColumnName("aplicacion");
+
+
         });
 
         modelBuilder.Entity<Bodega>(entity =>
@@ -303,6 +306,8 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Updatedby)
                 .HasMaxLength(50)
                 .HasColumnName("updatedby");
+
+            entity.Property(e => e.Aplicacion).HasColumnName("aplicacion");
         });
 
 
@@ -1042,6 +1047,13 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Updatedby)
                 .HasMaxLength(50)
                 .HasColumnName("updatedby");
+            entity.Property(e => e.Aplicacion)
+                .HasColumnName("aplicacion")
+                .HasDefaultValue(1);
+            entity.HasOne(u => u.AplicacionNavigation)
+                .WithMany()
+                .HasForeignKey(u => u.Aplicacion)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Usuarioopcion>(entity =>

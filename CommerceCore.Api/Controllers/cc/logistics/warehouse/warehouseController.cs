@@ -27,7 +27,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics.warehouse
                     return BadRequest(new { message = "Los datos de la bodega son inválidos." });
                 }
 
-                var resultado = blWarehouse.AddWarehouse(newWarehouse, userName);
+                var resultado = blWarehouse.AddWarehouse(newWarehouse, userName, IdAplication);
 
                 if (resultado.StartsWith("Error"))
                 {

@@ -57,4 +57,7 @@ public partial class Usuario
 
     public Guid? Rowpointer { get; set; }
     public string? userName { get; set; } = "";
+    public int Aplicacion { get; set; }  // Nueva propiedad para la relación
+
+    public virtual Aplicacion AplicacionNavigation { get; set; } = null!;
 }

@@ -10,7 +10,7 @@ namespace CommerceCore.ML
     {
         public int Id { get; set; }
 
-        public int Usuario { get; set; }
+        public string Usuario { get; set; }
 
         public int? Opcion { get; set; }
 

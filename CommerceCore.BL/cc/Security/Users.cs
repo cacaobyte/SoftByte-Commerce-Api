@@ -158,7 +158,13 @@ namespace CommerceCore.BL.cc.Security
                 {
             new Claim("userId", user.Usuario1),  // Identificador del usuario
             new Claim("unique_name", user.userName),  // Nombre de usuario
-            new Claim("celular", user.Celular ?? string.Empty)
+            new Claim("celular", user.Celular ?? string.Empty),
+            new Claim("aplication", user.Aplicacion.ToString()), // ID de la aplicación
+            new Claim("reqCambioClave", user.ReqCambioClave?.ToString() ?? "false"), // Indica si debe cambiar contraseña
+            new Claim("fechaUltClave", user.FechaUltClave?.ToString("yyyy-MM-dd HH:mm:ss") ?? string.Empty), // Última actualización de la clave
+            new Claim("correo", user.CorreoElectronico ?? string.Empty), // Email del usuario
+            new Claim("tipoUsuario", user.Tipo ?? string.Empty), // Tipo de usuario
+            new Claim("activo", user.Activo?.ToString() ?? "false") // Estado del usuario (activo/inactivo)
         }),
                 Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -167,6 +173,7 @@ namespace CommerceCore.BL.cc.Security
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+
 
 
         public Usuario GetUserByUserName(string userName)

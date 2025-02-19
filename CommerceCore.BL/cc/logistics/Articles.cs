@@ -245,7 +245,7 @@ namespace CommerceCore.BL.cc.logistics
         /// <param name="imageFile">El archivo de imagen enviado desde el frontend.</param>
         /// <param name="userName">El nombre del usuario que crea el artículo.</param>
         /// <returns>El artículo creado con su URL de imagen.</returns>
-        public async Task<Articulo> CreateArticleAsync(CreateArticle newArticleData, IFormFile imageFile, string userName)
+        public async Task<Articulo> CreateArticleAsync(CreateArticle newArticleData, IFormFile imageFile, string userName, int IdAplication)
         {
             string folder = "SoftByte/Commerce/Articulos";
 
@@ -285,7 +285,9 @@ namespace CommerceCore.BL.cc.logistics
                         Createdby = userName,
                         Fechacreacion = DateTime.Now,
                         SubCategoria = newArticleData.SubCategoria,
-                        Clasificacion = newArticleData.Clasificacion
+                        Clasificacion = newArticleData.Clasificacion,
+                        Aplicacion = IdAplication
+
                     };
 
                     // 🔹 Subir imagen a Cloudflare si existe

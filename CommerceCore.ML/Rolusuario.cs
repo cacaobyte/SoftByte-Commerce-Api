@@ -10,10 +10,11 @@ namespace CommerceCore.ML
     {
         public int Rol { get; set; }
 
-        public int Usuario { get; set; }
+        public string Usuario { get; set; }
 
         public bool Superusuario { get; set; }
 
         public virtual Rol RolNavigation { get; set; } = null!;
+        public virtual Usuario UsuarioNavigation { get; set; } = null!;
     }
 }

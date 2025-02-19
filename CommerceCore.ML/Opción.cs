@@ -25,6 +25,7 @@ namespace CommerceCore.ML
         public int? Ordenmostrar { get; set; }
 
         public bool Activo { get; set; }
+        public int? aplicacion { get; set; }
 
         public virtual ICollection<Accion> Accions { get; set; } = new List<Accion>();
 
