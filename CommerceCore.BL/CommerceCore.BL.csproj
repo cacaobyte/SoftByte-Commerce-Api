@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CC\CC.csproj" />
     <ProjectReference Include="..\CommerceCore.DAL\CommerceCore.DAL.csproj" />
+    <ProjectReference Include="..\CommerceCore.EL\CommerceCore.EL.csproj" />
     <ProjectReference Include="..\CommerceCore.ML\CommerceCore.ML.csproj" />
   </ItemGroup>
 

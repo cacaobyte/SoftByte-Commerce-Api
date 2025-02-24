@@ -5,6 +5,7 @@ using CommerceCore.ML.Security;
 using System.Reflection;
 using System.Text.Json;
 using System.Security.Permissions;
+using CommerceCore.EL;
 
 namespace CommerceCore.Api.Controllers.security
 {
@@ -24,11 +25,11 @@ namespace CommerceCore.Api.Controllers.security
             try
             {
 
-                return Ok(blServiceSecurity.CreateOption(optionModel));
+                return Ok(blServiceSecurity.CreateOption(optionModel, IdAplication, Plan));
             }
-            catch (Exception ex)
+            catch (HttpResponseException ex)
             {
-                throw new Exception($"Error al crear una nueva option: {ex}");
+                throw ;
             }
         }
 
@@ -42,8 +43,7 @@ namespace CommerceCore.Api.Controllers.security
         {
             try
             {
-
-                return Ok(JsonSerializer.Serialize(blServiceSecurity.GetOptions(IdAplication)));
+                return Ok(blServiceSecurity.GetOptions(Plan));
             }
             catch (Exception ex)
             {
@@ -62,7 +62,7 @@ namespace CommerceCore.Api.Controllers.security
             try
             {
 
-                return Ok(JsonSerializer.Serialize(blServiceSecurity.GetOptionsByUserId(userId)));
+                return Ok(blServiceSecurity.GetOptionsByUserId(userId));
             }
             catch (Exception ex)
             {
