@@ -16,7 +16,7 @@ namespace CommerceCore.Api.Controllers.security
         private ServiceSecurity blServiceSecurity { get; } = new ServiceSecurity(Tool.configuration);
 
         /// <summary>
-        /// Obtener roles
+        /// Obtener Usuarios
         /// </summary>
         /// <returns></returns>
         [HttpGet()]
@@ -25,12 +25,34 @@ namespace CommerceCore.Api.Controllers.security
             try
             {
 
-                return Ok(JsonSerializer.Serialize(blServiceSecurity.GetUsers(IdAplication)));
+                return Ok(blServiceSecurity.GetUsers(IdAplication));
             }
             catch (Exception ex)
             {
                 throw new Exception($"Error al obtener los ususarios de la aplicacion {ex}");
             }
         }
+
+
+        /// <summary>
+        /// Obtener usuarios Activos
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("Active")]
+        public IActionResult GetUsersActive()
+        {
+            try
+            {
+
+                return Ok(blServiceSecurity.GetUsers(IdAplication));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al obtener los ususarios de la aplicacion {ex}");
+            }
+        }
+
+
+
     }
 }

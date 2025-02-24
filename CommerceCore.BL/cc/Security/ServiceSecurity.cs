@@ -759,23 +759,84 @@ namespace CommerceCore.BL.cc.Security
         ///</summary>
         ///<return></return>
         ///<param></param>
-        public dynamic GetUsers(int aplication)
+        public dynamic GetUsersActive(int aplication)
         {
             SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
-            var result = db.Usuarios.Where(x =>
-                x.Activo.Equals("S") && x.Aplicacion == aplication
+            var result = db.Usuarios.Where(x => x.Activo == true && x.Aplicacion == aplication
             ).Select(x => new
             {
                 userName = x.Nombre,
                 userId = x.Usuario1,
                 estado = x.Activo,
                 claveVista = $"{x.Usuario1} - {x.Nombre}",
-                parent = x.Usuario1
-            }
-            ).OrderBy(x => x.userName);
+                parent = x.Usuario1,
+                tipo = x.Tipo,
+                reqCambioClave = x.ReqCambioClave,
+                frecuenciaClave = x.FrecuenciaClave,
+                fechaUltClave = x.FechaUltClave,
+                maxIntentosConex = x.MaxIntentosConex,
+                correoElectronico = x.CorreoElectronico,
+                celular = x.Celular,
+                telefono1 = x.Telefono1,
+                telefono2 = x.Telefono2,
+                direccion = x.Direccion,
+                documentoIdentificacion = x.DocumentoIdentificacion,
+                fotoUrl = x.FotoUrl,
+                fechaNacimiento = x.FechaNacimiento,
+                tipoAcceso = x.TipoAcceso,
+                tipoPersonalizado = x.TipoPersonalizado,
+                createdBy = x.Createdby,
+                updatedBy = x.Updatedby,
+                createDate = x.Createdate,
+                updateDate = x.Updatedate,
+                noteExistsFlag = x.Noteexistsflag,
+                recordDate = x.Recorddate,
+                rowPointer = x.Rowpointer
+            }).OrderBy(x => x.userName);
             return result;
         }
 
+        ///<summary>
+        ///Obtiene todos los usuarios registrados en la db
+        ///</summary>
+        ///<return></return>
+        ///<param></param>
+        public dynamic GetUsers(int aplication)
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            var result = db.Usuarios.Where(x => x.Aplicacion == aplication
+            ).Select(x => new
+            {
+                userName = x.Nombre,
+                userId = x.Usuario1,
+                estado = x.Activo,
+                claveVista = $"{x.Usuario1} - {x.Nombre}",
+                parent = x.Usuario1,
+                tipo = x.Tipo,
+                reqCambioClave = x.ReqCambioClave,
+                frecuenciaClave = x.FrecuenciaClave,
+                fechaUltClave = x.FechaUltClave,
+                maxIntentosConex = x.MaxIntentosConex,
+                correoElectronico = x.CorreoElectronico,
+                celular = x.Celular,
+                telefono1 = x.Telefono1,
+                telefono2 = x.Telefono2,
+                direccion = x.Direccion,
+                documentoIdentificacion = x.DocumentoIdentificacion,
+                fotoUrl = x.FotoUrl,
+                fechaNacimiento = x.FechaNacimiento,
+                tipoAcceso = x.TipoAcceso,
+                tipoPersonalizado = x.TipoPersonalizado,
+                createdBy = x.Createdby,
+                updatedBy = x.Updatedby,
+                createDate = x.Createdate,
+                updateDate = x.Updatedate,
+                noteExistsFlag = x.Noteexistsflag,
+                recordDate = x.Recorddate,
+                rowPointer = x.Rowpointer
+            }).OrderBy(x => x.userName);
+            return result;
+        }
 
 
         ///<summary>
