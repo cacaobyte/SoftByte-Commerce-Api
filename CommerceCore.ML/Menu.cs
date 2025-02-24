@@ -16,6 +16,7 @@ namespace CommerceCore.ML
         public string Nombre { get; set; } = null!;
 
         public bool Activo { get; set; }
+        public string? plan { get; set; }
 
         public virtual ICollection<Agrupador> Agrupadors { get; set; } = new List<Agrupador>();
 

@@ -36,6 +36,7 @@ namespace CommerceCore.Api.Tools
                     var correo = jwtToken.Claims.FirstOrDefault(c => c.Type == "correo")?.Value;
                     var tipoUsuario = jwtToken.Claims.FirstOrDefault(c => c.Type == "tipoUsuario")?.Value;
                     var activo = jwtToken.Claims.FirstOrDefault(c => c.Type == "activo")?.Value;
+                    var plan = jwtToken.Claims.FirstOrDefault(c => c.Type == "plan")?.Value;
 
                     // Retorna un objeto UserInfo personalizado con los nuevos valores
                     return new UserInfo
@@ -48,12 +49,25 @@ namespace CommerceCore.Api.Tools
                         LastPasswordChangeDate = fechaUltClave ?? "",
                         Email = correo ?? "",
                         UserType = tipoUsuario ?? "Usuario",
-                        IsActive = activo == "True"
+                        IsActive = activo == "True",
+                        Plan = plan ?? "Basico"
                     };
                 }
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// type del usuario
+        /// </summary>
+        public string Plan
+        {
+            get
+            {
+                UserInfo userInfo = GetUserInfo();
+                return userInfo == null ? "Basico" : userInfo.Plan;
+            }
         }
 
         /// <summary>

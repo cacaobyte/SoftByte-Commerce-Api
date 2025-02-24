@@ -126,19 +126,25 @@ namespace CommerceCore.BL.cc.Security
                 {
                     // Encriptar la contraseña ingresada para comparar
                     string encryptedPassword = password.EncryptPassword();
-
+                  
                     // Buscar el usuario por userName o correo electrónico y verificar la contraseña
                     var user = db.Usuarios.FirstOrDefault(u =>
                         (u.userName == userNameOrEmail || u.CorreoElectronico == userNameOrEmail) &&
                         u.Clave == encryptedPassword);
+
+                    var aplication = db.Aplicacions.Where(a => a.Id == user.Aplicacion && a.Activo).FirstOrDefault();
 
                     if (user == null)
                     {
                         throw new Exception("Usuario o contraseña incorrectos.");
                     }
 
+                    if (aplication.plan == string.Empty || aplication.plan == null)
+                    {
+                        throw new Exception("La aplicación no posee un plan asociado, registrese en uno o asociese a una empresa con plan");
+                    }
                     // Generar el token JWT
-                    return GenerateJwtToken(user);
+                    return GenerateJwtToken(user, aplication.plan);
                 }
             }
             catch (Exception ex)
@@ -147,7 +153,7 @@ namespace CommerceCore.BL.cc.Security
             }
         }
 
-        private string GenerateJwtToken(Usuario user)
+        private string GenerateJwtToken(Usuario user, string plan)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(jwtSecret);
@@ -164,7 +170,8 @@ namespace CommerceCore.BL.cc.Security
             new Claim("fechaUltClave", user.FechaUltClave?.ToString("yyyy-MM-dd HH:mm:ss") ?? string.Empty), // Última actualización de la clave
             new Claim("correo", user.CorreoElectronico ?? string.Empty), // Email del usuario
             new Claim("tipoUsuario", user.Tipo ?? string.Empty), // Tipo de usuario
-            new Claim("activo", user.Activo?.ToString() ?? "false") // Estado del usuario (activo/inactivo)
+            new Claim("activo", user.Activo?.ToString() ?? "false"), // Estado del usuario (activo/inactivo)
+            new Claim("plan", plan), // Plan de la aplicación del cliente
         }),
                 Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
