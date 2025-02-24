@@ -10,6 +10,8 @@ using System.Reflection;
 using CommerceCore.DAL.Commerce;
 using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using System.Security.Permissions;
+using CommerceCore.EL;
+using System.Net;
 
 
 namespace CommerceCore.BL.cc.Security
@@ -28,39 +30,67 @@ namespace CommerceCore.BL.cc.Security
         ///<param name="optionModel">
         ///Informacion de la nueva opcion de seguridad para registrar
         ///</param>
-        public string CreateOption(SecurityOption optionModel)
+        public string CreateOption(SecurityOption optionModel, int aplication, string plan)
         {
             SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
 
             try
             {
-                // INSERCION DE NUEVA OPCION
-                if (!db.Opcions.Any(x => x.Menu.Equals(optionModel.menu) && x.Agrupador.Equals(optionModel.grouper) && x.Nombre.Equals(optionModel.name)))
-                {
-                    db.Opcions.Add(new Opcion()
-                    {
-                        Menu = optionModel.menu,
-                        Agrupador = optionModel.grouper,
-                        Nombre = optionModel.name,
-                        Texto = optionModel.text,
-                        Pathicono = optionModel.pathIcon,
-                        Url = optionModel.url,
-                        Ordenmostrar = optionModel.orderShow,
-                        Activo = true
-                    });
+                var menu = db.Menus
+                    .Join(db.Aplicacions, m => m.plan, a => a.plan, (m, a) => new { m, a })
+                    .Where(x => x.a.plan == plan)
+                    .FirstOrDefault();
 
-                    db.SaveChanges();
-                    return "Registro exitoso";
+                if (menu.a.plan == "Empresarial")
+                {
+                    HttpStatusCode.Unauthorized.ThrowHttpResponseException("No posees un plan empresarial para poder crear opciones.");
                 }
-                return "Ya existe una opcion con los datos ingresados";
+
+
+
+
+                var agrupadores = db.Agrupadors
+                    .Where(a => a.Menu == menu.m.Id)
+                    .Select(a => a.Id)
+                    .ToList();
+
+
+                // 🔹 Si la opción ya existe en el mismo menú y mismo agrupador, se rechaza
+                bool existeOpcion = db.Opcions.Any(x =>
+                    x.Menu == menu.m.Id &&
+                    (optionModel.grouper == null || agrupadores.Contains(optionModel.grouper.Value)) &&
+                    x.Nombre == optionModel.name
+                );
+                if (existeOpcion)
+                {
+                    HttpStatusCode.Conflict.ThrowHttpResponseException("Ya existe una opción con el mismo nombre en el mismo menú o agrupador.");
+                }
+
+
+                // 🔹 Si no existe, la insertamos
+                db.Opcions.Add(new Opcion()
+                {
+                    Menu = menu.m.Id,
+                    Agrupador = optionModel.grouper,
+                    Nombre = optionModel.name,
+                    Texto = optionModel.text,
+                    Pathicono = optionModel.pathIcon,
+                    Url = optionModel.url,
+                    Ordenmostrar = optionModel.orderShow,
+                    Activo = true
+                });
+
+                db.SaveChanges();
+                return "Registro exitoso";
             }
-            catch (Exception ex)
+            catch (HttpResponseException ex)
             {
-                
-              
-                throw new Exception("No se pudo registrar una nueva opcion de seguridad Error: " + ex.Message);
+                throw;
             }
         }
+
+
+
 
 
         ///<summary>
@@ -549,7 +579,7 @@ namespace CommerceCore.BL.cc.Security
         ///</summary>
         ///<return></return>
         ///<param></param>
-        public dynamic GetMenus(int aplication)
+        public dynamic GetMenus(string plan)
         {
             SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
             var result = db.Menus.Join(
@@ -558,13 +588,14 @@ namespace CommerceCore.BL.cc.Security
                 aplicacion => aplicacion.Id,
                 (menu, aplicacion) => new { menu, aplicacion }
             ).Where(o =>
-                o.menu.Activo.Equals(true) &&  o.menu.Aplicacion == aplication
+                o.menu.Activo.Equals(true) &&  o.menu.plan == plan
             ).Select(x => new
             {
                 opcion = x.menu.Opcions,
                 nombre = x.menu.Nombre,
                 aplicacion = x.aplicacion.Nombre,
-                idMenu = x.menu.Id
+                idMenu = x.menu.Id,
+                plan = x.menu.plan
             }
             );
             return result;
@@ -624,7 +655,7 @@ namespace CommerceCore.BL.cc.Security
         ///</summary>
         ///<return></return>
         ///<param></param>
-        public dynamic GetOptions(int aplication)
+        public dynamic GetOptions(string plan)
         {
             SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
             var result = db.Opcions.Join(
@@ -633,7 +664,7 @@ namespace CommerceCore.BL.cc.Security
                 menu => menu.Id,
                 (opcion, menu) => new { opcion, menu }
             )
-            .Where( x => x.menu.Aplicacion == aplication)
+            .Where( x => x.menu.plan == plan)
             .Select(x => new
             {
                 menu = x.menu.Nombre,
@@ -641,9 +672,54 @@ namespace CommerceCore.BL.cc.Security
                 idOpcion = x.opcion.Id,
                 estado = x.opcion.Activo,
                 descripcion = x.opcion.Texto,
-                nombreMostrar = $"{x.opcion.Nombre} - menú: {x.menu.Nombre}"
+                nombreMostrar = $"{x.opcion.Nombre} - menú: {x.menu.Nombre}",
+                url = x.opcion.Url,
+                agrupador = x.opcion.AgrupadorNavigation.Nombre,
+                icons = x.opcion.Pathicono
             }
             ).OrderByDescending(e => e.idOpcion);
+            return result;
+        }
+
+        public dynamic GetGroupers(string plan)
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            var result = db.Agrupadors
+                .Join(db.Menus, a => a.Menu, m => m.Id, (a, m) => new { a, m })
+                .Where(x => x.m.plan == plan )
+                .Select(x => new
+                {
+                    id = x.a.Id,
+                    idMenu = x.a.Menu,
+                    nameMenu = x.m.Nombre,
+                    nameAgrupador = x.a.Nombre,
+                    textoAgrupador = x.a.Texto,
+                    icono = x.a.Pathicono.Length,
+                    estado = x.a.Activo,
+                    idAplicacion = x.m.Aplicacion
+
+                }).OrderByDescending(e => e.id);
+            return result;
+        }
+
+        public dynamic GetGroupersActive(string plan)
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            var result = db.Agrupadors
+                .Join(db.Menus, a => a.Menu, m => m.Id, (a, m) => new { a, m })
+                .Where(x => x.m.plan == plan && x.a.Activo)
+                .Select(x => new
+                {
+                    id = x.a.Id,
+                    idMenu = x.a.Menu,
+                    nameMenu = x.m.Nombre,
+                    nameAgrupador = x.a.Nombre,
+                    textoAgrupador = x.a.Texto,
+                    icono = x.a.Pathicono.Length,
+                    estado = x.a.Activo,
+                    idAplicacion = x.m.Aplicacion
+
+                }).OrderByDescending(e => e.id);
             return result;
         }
 
@@ -670,7 +746,8 @@ namespace CommerceCore.BL.cc.Security
                    aplicacion = x.aplicacion.Nombre,
                    idRol = x.rol.Id,
                    estado = x.rol.Activo,
-                   nombreMostrar = $"{x.rol.Nombre} - app: {x.aplicacion.Nombre}"
+                   nombreMostrar = $"{x.rol.Nombre} - app: {x.aplicacion.Nombre}",
+                   idAplicaction =x.aplicacion.Id
                }
             ).OrderByDescending(e => e.idRol);
             return result;

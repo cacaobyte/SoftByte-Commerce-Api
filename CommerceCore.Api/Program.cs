@@ -1,4 +1,5 @@
-using CommerceCore.DAL.Commerce;
+﻿using CommerceCore.DAL.Commerce;
+using CommerceCore.EL;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,12 +33,33 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// 📌 Agregar el middleware para capturar `HttpResponseException`
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (HttpResponseException ex)
+    {
+        context.Response.StatusCode = ex.StatusCode;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync($"{{\"error\": \"{ex.Message}\"}}");
+    }
+    catch (Exception ex)
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync($"{{\"error\": \"Error interno del servidor: {ex.Message}\"}}");
+    }
+});
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
-// Aplicar CORS con la pol�tica "AllowAll"
+// Aplicar CORS con la política "AllowAll"
 app.UseCors("AllowAll");
 
 app.UseAuthorization();

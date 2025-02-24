@@ -23,6 +23,7 @@ namespace CommerceCore.ML
         public DateTime? Cookieexpire { get; set; }
 
         public bool? Interno { get; set; }
+        public string? plan {  get; set; }
 
         public virtual Aplicacionconfiguracion? Aplicacionconfiguracion { get; set; }
 

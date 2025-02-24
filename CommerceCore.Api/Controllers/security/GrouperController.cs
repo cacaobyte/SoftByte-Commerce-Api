@@ -5,56 +5,48 @@ using CommerceCore.ML.Security;
 using System.Reflection;
 using System.Text.Json;
 using System.Security.Permissions;
+using CommerceCore.EL;
 
 namespace CommerceCore.Api.Controllers.security
 {
-    [Route("Seguridad/Menu")]
+    [Route("security/grouper")]
     [ApiController]
-    public class MenuController : CustomController
+    public class GrouperController : CustomController
     {
-
         private ServiceSecurity blServiceSecurity { get; } = new ServiceSecurity(Tool.configuration);
 
         /// <summary>
-        /// Obtener menus
+        /// Obtener agrupadores del menu
         /// </summary>
         /// <returns></returns>
         [HttpGet()]
-        public IActionResult GetMenus()
+        public IActionResult GetGroupers()
         {
             try
             {
-                return Ok(JsonSerializer.Serialize(blServiceSecurity.GetMenus(Plan)));
+                return Ok(blServiceSecurity.GetGroupers(Plan));
             }
-            catch (Exception ex)
+            catch (HttpResponseException  ex)
             {
-                throw new Exception($"Error al obtener el menu de la aplicación{ex}");
+                throw new Exception($"Error al obtener la aplicaciones {ex}");
             }
         }
-
-
         /// <summary>
-        /// Obtener menus
+        /// Obtener agrupadores activos del menu
         /// </summary>
         /// <returns></returns>
-        [HttpGet("AllMenu")]
-        public IActionResult GetAllMenus()
+        [HttpGet("Active")]
+        public IActionResult GetGroupersActive()
         {
             try
             {
-                return Ok(JsonSerializer.Serialize(blServiceSecurity.GetAllMenus()));
+                return Ok(blServiceSecurity.GetGroupersActive(Plan));
             }
-            catch (Exception ex)
+            catch (HttpResponseException ex)
             {
-                throw new Exception($"Error al obtener el menu de la aplicación{ex}");
+                throw new Exception($"Error al obtener la aplicaciones {ex}");
             }
         }
-
-
-
-
-
-
 
     }
 }
