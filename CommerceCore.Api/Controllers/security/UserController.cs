@@ -52,6 +52,25 @@ namespace CommerceCore.Api.Controllers.security
             }
         }
 
+        /// <summary>
+        /// Actualizar el estado del usuario
+        /// </summary>
+        /// <param name="idUser">ID del usuario a actualizar</param>
+        /// <returns>Resultado de la actualización</returns>
+        [HttpPut("{idUser}")]
+        public IActionResult UpdateStatusUser(string idUser)
+        {
+            try
+            {
+                var result = blServiceSecurity.UpdateStatusUser(idUser);
+                return Ok(new { message = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = $"Error al actualizar el estado del usuario: {ex.Message}" });
+            }
+        }
+
 
 
     }

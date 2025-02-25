@@ -807,7 +807,8 @@ namespace CommerceCore.BL.cc.Security
             var result = db.Usuarios.Where(x => x.Aplicacion == aplication
             ).Select(x => new
             {
-                userName = x.Nombre,
+                usuario = x.Nombre,
+                userName = x.userName,
                 userId = x.Usuario1,
                 estado = x.Activo,
                 claveVista = $"{x.Usuario1} - {x.Nombre}",
@@ -838,6 +839,29 @@ namespace CommerceCore.BL.cc.Security
             return result;
         }
 
+        ///<summary>
+        ///Actualización del estatus del usuario
+        ///</summary>
+        ///<return></return>
+        ///<param></param>
+        public string UpdateStatusUser(string idUser)
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            var user = db.Usuarios.Where(u => u.Usuario1 == idUser).FirstOrDefault();
+
+            if (user == null)
+            {
+                return "Usuario no encontrado.";
+            }
+
+            // Si 'Activo' es null, asigna false por defecto antes de cambiar el estado
+            user.Activo = !(user.Activo ?? false);
+
+            // Guardar cambios en la base de datos
+            db.SaveChanges();
+
+            return $"El usuario {user.userName} ha actualizado su estado a {(user.Activo == true ? "Activo" : "Inactivo")}.";
+        }
 
         ///<summary>
         ///Obtiene todos las acciones registrados en la db
