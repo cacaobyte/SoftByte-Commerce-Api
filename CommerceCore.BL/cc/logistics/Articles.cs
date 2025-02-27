@@ -236,6 +236,49 @@ namespace CommerceCore.BL.cc.logistics
 
 
 
+        /// <summary>
+        /// Obtiene todas las  bodegas
+        /// </summary>
+        /// <returns>Lista de Bodega (ML)</returns>
+        public List<Bodega> GetAllWarehouseActive()
+        {
+            try
+            {
+                using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
+                {
+                    // Mapear manualmente el modelo DAL al modelo ML
+                    return db.Bodegas.Where(b => b.Activo == true).Select(b => new Bodega
+                    {
+                        Bodega1 = b.Bodega1,
+                        Descripcion = b.Descripcion,
+                        Activo = b.Activo,
+                        Createdby = b.Createdby,
+                        Updatedby = b.Updatedby,
+                        Fechacreacion = b.Fechacreacion,
+                        Fechaactualizacion = b.Fechaactualizacion,
+                        Departamento = b.Departamento,
+                        Municipio = b.Municipio,
+                        Direccion = b.Direccion,
+                        Telefono = b.Telefono,
+                        Bodegacentral = b.Bodegacentral,
+                        Bodegasecundaria = b.Bodegasecundaria,
+                        Region = b.Region,
+                        Correo = b.Correo,
+                        // Relación opcional: solo si necesitas cargar las existencias
+                        /*    ExistenciaBodegas = b.ExistenciaBodegas.Select(eb => new ExistenciaBodega
+                            {
+                                Articulo = eb.Articulo,
+                                Bodega = eb.Bodega,
+                                CantDisponible = eb.CantDisponible
+                            }).ToList()*/
+                    }).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while retrieving warehouses.", ex);
+            }
+        }
 
 
         /// <summary>
