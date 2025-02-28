@@ -21,14 +21,14 @@ namespace CommerceCore.Api.Controllers.cc.Security
         /// <param name="createUser">Objeto con la información del usuario a registrar</param>
         /// <returns>Información del usuario registrado</returns>
         [HttpPost("register")]
-        public IActionResult RegisterUser([FromBody] CreateUser createUser)
+        public async Task<IActionResult> RegisterUser([FromForm] CreateUser createUser, [FromForm] IFormFile imageFile)
         {
             if (createUser == null)
                 return BadRequest("El objeto CreateUser no puede ser nulo.");
 
             try
             {
-                var newUser = blUsers.RegisterUser(createUser, userName);
+                var newUser = await blUsers.RegisterUser(createUser, userName, imageFile, IdAplication);
                 return Ok(newUser);
             }
             catch (Exception ex)
@@ -36,6 +36,7 @@ namespace CommerceCore.Api.Controllers.cc.Security
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
+
 
 
         /// <summary>

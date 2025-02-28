@@ -32,6 +32,24 @@ namespace CommerceCore.Api.Controllers.security
             }
         }
 
+        /// <summary>
+        /// Obtener roles
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("Active")]
+        public IActionResult GetRolesActive()
+        {
+            try
+            {
+
+                return Ok(blServiceSecurity.GetRolesActive(IdAplication));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al obtener las action{ex}");
+            }
+        }
+
 
         /// <summary>
         /// Crea un nuevo Rol de seguridad

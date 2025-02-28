@@ -5,7 +5,7 @@ using CommerceCore.ML.Security;
 using System.Reflection;
 using System.Text.Json;
 using System.Security.Permissions;
-
+using CommerceCore.EL;
 
 namespace CommerceCore.Api.Controllers.security
 {
@@ -49,6 +49,25 @@ namespace CommerceCore.Api.Controllers.security
             catch (Exception ex)
             {
                 throw new Exception($"Error al obtener los ususarios de la aplicacion {ex}");
+            }
+        }
+
+        /// <summary>
+        /// Actualizar el estado del usuario
+        /// </summary>
+        /// <param name="idUser">ID del usuario a actualizar</param>
+        /// <returns>Resultado de la actualización</returns>
+        [HttpPut("{idUser}")]
+        public IActionResult UpdateStatusUser(string idUser)
+        {
+            try
+            {
+                var result = blServiceSecurity.UpdateStatusUser(idUser);
+                return Ok(new { message = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = $"Error al actualizar el estado del usuario: {ex.Message}" });
             }
         }
 

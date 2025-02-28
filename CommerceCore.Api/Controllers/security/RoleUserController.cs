@@ -5,6 +5,7 @@ using CommerceCore.ML.Security;
 using System.Reflection;
 using System.Text.Json;
 using System.Security.Permissions;
+using CommerceCore.EL;
 
 namespace CommerceCore.Api.Controllers.security
 {
@@ -44,7 +45,7 @@ namespace CommerceCore.Api.Controllers.security
             try
             {
 
-                return Ok(JsonSerializer.Serialize(blServiceSecurity.GetUsersWithRole(IdAplication)));
+                return Ok(blServiceSecurity.GetUsersWithRole(IdAplication));
             }
             catch (Exception ex)
             {
@@ -63,7 +64,7 @@ namespace CommerceCore.Api.Controllers.security
             try
             {
 
-                return Ok(JsonSerializer.Serialize(blServiceSecurity.GetRoleUsers(IdAplication)));
+                return Ok(blServiceSecurity.GetRoleUsers(IdAplication));
             }
             catch (Exception ex)
             {
@@ -81,7 +82,7 @@ namespace CommerceCore.Api.Controllers.security
             try
             {
 
-                return Ok(JsonSerializer.Serialize(blServiceSecurity.DeleteRolUser(rolId, userId)));
+                return Ok(blServiceSecurity.DeleteRolUser(rolId, userId));
             }
             catch (Exception ex)
             {
@@ -101,9 +102,9 @@ namespace CommerceCore.Api.Controllers.security
 
                 return Ok(blServiceSecurity.CreateRoleUser(rolUserModel));
             }
-            catch (Exception ex)
+            catch (HttpResponseException ex)
             {
-                throw new Exception($"Error al crear un roll al usuario {ex}");
+                throw;
             }
         }
 
