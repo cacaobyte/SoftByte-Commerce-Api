@@ -13,6 +13,7 @@ using CommerceCore.ML;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using CommerceCore.BL.cc.cloudinary;
 
 
 namespace CommerceCore.BL.cc.Security
@@ -34,30 +35,47 @@ namespace CommerceCore.BL.cc.Security
     public class Users : LogicBase
     {
         private readonly string jwtSecret = "f9Jd83NgCkL7pR6tXmYqWv4Zs2H8oBtKyP5VcF1aM0XjTlNhGqW9";
-
+        private UploadImages blUploadImages;
         public Users(Configuration settings) {
             configuration = settings;
+            blUploadImages = new UploadImages(settings);
         }
-
-        public Usuario RegisterUser(CreateUser createUser, string sessionUser)
+        public async Task<Usuario> RegisterUser(CreateUser createUser, string sessionUser, IFormFile imageFile, int aplication)
         {
             try
             {
                 using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
                 {
-                    // Encriptar la contraseña por defecto "Polar01"
-                    createUser.Clave = "Polar01".EncryptPassword();
+                    // 🔹 Encriptar contraseña (usar "Polar01" si está vacía)
+                    createUser.Clave = string.IsNullOrEmpty(createUser.Clave) ? "Polar01".EncryptPassword() : createUser.Clave.EncryptPassword();
 
-                    // Generar un userName basado en el nombre del usuario y asegurarse de que sea único
+                    // 🔹 Generar un userName único basado en el nombre del usuario
                     string generatedUserName = GenerateUniqueUserName(createUser.Nombre, db);
 
-                    // Mapear CreateUser a Usuario
+                    // 🔹 Subir imagen a Cloudflare si existe
+                    string imageUrl = null;
+
+                    if (imageFile != null && imageFile.Length > 0)
+                    {
+                        try
+                        {
+                            imageUrl = await blUploadImages.UploadImageToCloudflare(imageFile, generatedUserName);
+                            createUser.FotoUrl = imageUrl;
+                        }
+                        catch (Exception uploadEx)
+                        {
+                            imageUrl = "https://cdn-icons-png.flaticon.com/512/219/219983.png"; 
+                        }
+                    }
+
+                    // 🔹 Mapear CreateUser a Usuario
                     var newUser = new Usuario
                     {
                         Usuario1 = Guid.NewGuid().ToString(),
-                        userName = generatedUserName,  // Asignar el userName generado
+                        userName = generatedUserName,
                         Nombre = createUser.Nombre,
                         Tipo = createUser.Tipo,
+                        Aplicacion = aplication,
                         Activo = createUser.Activo ?? true,
                         ReqCambioClave = createUser.ReqCambioClave,
                         FrecuenciaClave = createUser.FrecuenciaClave,
@@ -70,7 +88,7 @@ namespace CommerceCore.BL.cc.Security
                         Telefono2 = createUser.Telefono2,
                         Direccion = createUser.Direccion,
                         DocumentoIdentificacion = createUser.DocumentoIdentificacion,
-                        FotoUrl = createUser.FotoUrl,
+                        FotoUrl = imageUrl, // 🔹 Asignar la URL final de la imagen
                         FechaNacimiento = createUser.FechaNacimiento,
                         TipoAcceso = createUser.TipoAcceso,
                         TipoPersonalizado = createUser.TipoPersonalizado,
@@ -82,19 +100,20 @@ namespace CommerceCore.BL.cc.Security
                         Rowpointer = Guid.NewGuid()
                     };
 
-                    // Agregar el usuario a la base de datos
+                    // 🔹 Guardar el usuario en la base de datos
                     db.Usuarios.Add(newUser);
                     db.SaveChanges();
 
-                    // Retornar el usuario creado
+                    // 🔹 Retornar el usuario creado
                     return newUser;
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al registrar el usuario: " + ex.Message);
+                throw new Exception($"Error al registrar el usuario: {ex.Message}");
             }
         }
+
 
         private string GenerateUniqueUserName(string fullName, SoftByte db)
         {

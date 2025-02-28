@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using System.Security.Permissions;
 using CommerceCore.EL;
 using System.Net;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace CommerceCore.BL.cc.Security
@@ -171,46 +172,51 @@ namespace CommerceCore.BL.cc.Security
 
 
         ///<summary>
-        ///Crea un nuevo rolusuario de seguridad
+        /// Crea un nuevo rolusuario de seguridad
         ///</summary>
-        ///<return></return>
-        ///<param name="rolUserModel">
-        ///Informacion con el rol y usuario a asignar
+        ///<param name="roleUserModel">
+        /// Información con el rol y usuario a asignar
         ///</param>
+        ///<returns>Mensaje de confirmación o error</returns>
         public string CreateRoleUser(SecurityRoleUser roleUserModel)
         {
-            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            using SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
             string roleUserExistingMessage = "";
 
             try
             {
-                roleUserModel.roles.ForEach(role =>
+                // Verifica si el usuario ya tiene el rol asignado
+                if (db.Rolusuarios.Any(x => x.Rol.Equals(roleUserModel.role) && x.Usuario.Equals(roleUserModel.user)))
                 {
-                    // INSERCION DE NUEVO ROLUSUARIO
-                    if (!db.Rolusuarios.Any(x => x.Rol.Equals(role) && x.Usuario.Equals(roleUserModel.user)))
-                    {
-                        db.Rolusuarios.Add(new Rolusuario()
-                        {
-                            Rol = role,
-                            Usuario = roleUserModel.user
-                        });
+                    string rolName = db.Rols.FirstOrDefault(x => x.Id.Equals(roleUserModel.role))?.Nombre ?? "desconocido";
+                    roleUserExistingMessage = $"El usuario {roleUserModel.user} ya tiene asignado el rol {rolName}.";
 
-                        db.SaveChanges();
-                    }
-                    else
-                    {
-                        string rolName = db.Rols.FirstOrDefault(x => x.Id.Equals(role)).Nombre;
-                        roleUserExistingMessage = $"El usuario: {roleUserModel.user} ya tiene asignado el rol {rolName}";
-                    };
+                    // Lanza una excepción HTTP con código 409 (Conflict)
+                    HttpStatusCode.Conflict.ThrowHttpResponseException(roleUserExistingMessage);
+                }
+
+                // Inserta el nuevo rol de usuario (sin UsuarioNavigation)
+                db.Rolusuarios.Add(new Rolusuario()
+                {
+                    Rol = roleUserModel.role,
+                    Usuario = roleUserModel.user,
+                    Superusuario = roleUserModel.superUser
                 });
-                return roleUserExistingMessage != "" ? roleUserExistingMessage : "Registro exitoso";
-            }
-            catch (Exception ex)
-            {
 
-                throw new Exception("No se pudo asignar un nuevo rolusuario Error: " + ex.Message);
+                db.SaveChanges();
+                return "Registro exitoso";
+            }
+            catch (DbUpdateException dbEx)  // Errores de base de datos
+            {
+                throw new Exception($"Error al insertar el rolusuario: {dbEx.InnerException?.Message ?? dbEx.Message}");
+            }
+            catch (HttpResponseException ex)
+            {
+                throw;
             }
         }
+
+
 
 
 
@@ -753,7 +759,33 @@ namespace CommerceCore.BL.cc.Security
             return result;
         }
 
-
+        ///<summary>
+        ///Obtiene todos los roles registrados en la db haciendo join con la tabla aplicacion para hacer distincion
+        ///</summary>
+        ///<return></return>
+        ///<param></param>
+        public dynamic GetRolesActive(int aplication)
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            var result = db.Rols.Join(
+                db.Aplicacions,
+                rol => rol.Aplicacion,
+                aplicacion => aplicacion.Id,
+                (rol, aplicacion) => new { rol, aplicacion }
+            ).Where(o =>
+                o.aplicacion.Id == aplication && o.rol.Activo == true)
+           .Select(x => new
+           {
+               rol = x.rol.Nombre,
+               aplicacion = x.aplicacion.Nombre,
+               idRol = x.rol.Id,
+               estado = x.rol.Activo,
+               nombreMostrar = $"{x.rol.Nombre} - app: {x.aplicacion.Nombre}",
+               idAplicaction = x.aplicacion.Id
+           }
+            ).OrderByDescending(e => e.idRol);
+            return result;
+        }
         ///<summary>
         ///Obtiene todos los usuarios registrados en la db
         ///</summary>
@@ -807,7 +839,8 @@ namespace CommerceCore.BL.cc.Security
             var result = db.Usuarios.Where(x => x.Aplicacion == aplication
             ).Select(x => new
             {
-                userName = x.Nombre,
+                usuario = x.Nombre,
+                userName = x.userName,
                 userId = x.Usuario1,
                 estado = x.Activo,
                 claveVista = $"{x.Usuario1} - {x.Nombre}",
@@ -838,6 +871,29 @@ namespace CommerceCore.BL.cc.Security
             return result;
         }
 
+        ///<summary>
+        ///Actualización del estatus del usuario
+        ///</summary>
+        ///<return></return>
+        ///<param></param>
+        public string UpdateStatusUser(string idUser)
+        {
+            SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
+            var user = db.Usuarios.Where(u => u.Usuario1 == idUser).FirstOrDefault();
+
+            if (user == null)
+            {
+                return "Usuario no encontrado.";
+            }
+
+            // Si 'Activo' es null, asigna false por defecto antes de cambiar el estado
+            user.Activo = !(user.Activo ?? false);
+
+            // Guardar cambios en la base de datos
+            db.SaveChanges();
+
+            return $"El usuario {user.userName} ha actualizado su estado a {(user.Activo == true ? "Activo" : "Inactivo")}.";
+        }
 
         ///<summary>
         ///Obtiene todos las acciones registrados en la db
@@ -1003,13 +1059,16 @@ namespace CommerceCore.BL.cc.Security
                 rolUser => rolUser.Rol,
                 rol => rol.Id,
                 (rolUser, rol) => new { rolUser, rol })
-            .Where( x => x.rol.Aplicacion == aplication)
+            .Join(db.Usuarios, r => r.rolUser.Usuario, u => u.Usuario1, ( r, u ) => new { r, u })
+            .Where( x => x.r.rol.Aplicacion == aplication)
             .Select(x => new
             {
-                idRol = x.rolUser.Rol,
-                usuario = x.rolUser.Usuario,
-                claveVista = x.rol.Nombre,
-                selected = true
+                idRol = x.r.rolUser.Rol,
+                usuario = x.r.rolUser.Usuario,
+                claveVista = x.r.rol.Nombre,
+                selected = true,
+                username = x.u.userName,
+                parentUser = x.u.Nombre
             }
             );
             return result;

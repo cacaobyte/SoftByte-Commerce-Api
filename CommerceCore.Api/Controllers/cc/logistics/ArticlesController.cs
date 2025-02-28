@@ -113,6 +113,24 @@ namespace CommerceCore.Api.Controllers.cc.logistics
         }
 
 
+        /// <summary>
+        /// Devuelve todas la bodegas
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("bodegas/active")]
+        public IActionResult GetAllWarehouseActive()
+        {
+            try
+            {
+                var result = blArticles.GetAllWarehouse();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
+        }
         [HttpPost("crearArticulos")]
         public async Task<IActionResult> CreateArticle([FromForm] CreateArticle newArticleData, [FromForm] IFormFile imageFile)
         {

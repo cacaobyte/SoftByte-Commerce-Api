@@ -8,7 +8,7 @@ namespace CommerceCore.ML.Security
 {
     public class SecurityRoleUser
     {
-        public byte role { get; set; }
+        public int role { get; set; }
         public string user { get; set; }
         public List<byte> roles { get; set; }
         public bool superUser { get; set; }
