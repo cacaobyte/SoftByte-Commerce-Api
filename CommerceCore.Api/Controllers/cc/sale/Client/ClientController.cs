@@ -20,7 +20,7 @@ namespace CommerceCore.Api.Controllers.cc.sale.Client
         {
             try
             {
-                var result = client.GetClient(userName);
+                var result = client.GetClient(userName, IdAplication);
                 return Ok(result);
             }
             catch (Exception ex)

@@ -16,14 +16,14 @@ namespace CommerceCore.BL.cc.sale.Clientes
             configuration = settings;
         }
 
-        public List<Cliente> GetClient(string userName)
+        public List<Cliente> GetClient(string userName, int aplication)
         {
             try
             {
                 using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
                 {
                     var clients = new List<Cliente>();
-                    clients = db.Clientes.Where(c => c.Activo == true ).ToList();
+                    clients = db.Clientes.Where(c => c.Activo == true && c.aplicacion == aplication).ToList();
                     return clients;
                 }
             }

@@ -24,8 +24,8 @@ namespace CommerceCore.Api.Controllers.security
         {
             try
             {
-
-                return Ok(JsonSerializer.Serialize(blServiceSecurity.GetUserOptions(IdAplication)));
+                
+                return Ok(blServiceSecurity.GetUserOptions(IdAplication));
             }
             catch (Exception ex)
             {
@@ -44,7 +44,7 @@ namespace CommerceCore.Api.Controllers.security
             try
             {
 
-                return Ok(JsonSerializer.Serialize(blServiceSecurity.GetUserOptions(actionId)));
+                return Ok(blServiceSecurity.GetUserOptions(actionId));
             }
             catch (Exception ex)
             {
@@ -81,8 +81,8 @@ namespace CommerceCore.Api.Controllers.security
         {
             try
             {
-
-                return Ok(JsonSerializer.Serialize(blServiceSecurity.GetUsersWithOptions(IdAplication)));
+             
+                return Ok(blServiceSecurity.GetUsersWithOptions(IdAplication));//IdAplication));
             }
             catch (Exception ex)
             {

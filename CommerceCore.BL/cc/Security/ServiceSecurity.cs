@@ -189,7 +189,7 @@ namespace CommerceCore.BL.cc.Security
                 if (db.Rolusuarios.Any(x => x.Rol.Equals(roleUserModel.role) && x.Usuario.Equals(roleUserModel.user)))
                 {
                     string rolName = db.Rols.FirstOrDefault(x => x.Id.Equals(roleUserModel.role))?.Nombre ?? "desconocido";
-                    roleUserExistingMessage = $"El usuario {roleUserModel.user} ya tiene asignado el rol {rolName}.";
+                    roleUserExistingMessage = $"El usuario ya tiene asignado el rol {rolName}.";
 
                     // Lanza una excepción HTTP con código 409 (Conflict)
                     HttpStatusCode.Conflict.ThrowHttpResponseException(roleUserExistingMessage);
@@ -1092,7 +1092,8 @@ namespace CommerceCore.BL.cc.Security
                 .GroupBy(c => c.u.Usuario1) 
                 .Select(x => new
                 {
-                    user = x.First().u.Usuario1  
+                    user = x.First().u.Usuario1,
+                    username = x.FirstOrDefault().u.userName,
                 });
             return result;
         }
