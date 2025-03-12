@@ -100,6 +100,7 @@ namespace CommerceCore.Api.Controllers.security
             try
             {
 
+                
                 return Ok(blServiceSecurity.UpdateUserOptionStatus(userOptionModel));
             }
             catch (Exception ex)
