@@ -407,38 +407,58 @@ namespace CommerceCore.BL.cc.Security
 
 
 
-        ///<summary>
-        ///Actualizar estado en relacion Usuario-opcion
-        ///</summary>
-        ///<return></return>
-        ///<param name="userOptionModel">
-        ///Informacion con el usuario y opcion a asginar
-        ///</param>
+        /// <summary>
+        /// Actualizar estado en relación Usuario-Opción
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="userOptionModel">
+        /// Información con el usuario y las opciones a asignar
+        /// </param>
         public string UpdateUserOptionStatus(SecurityUserOption userOptionModel)
         {
             SoftByte db = new SoftByte(configuration.appSettings.cadenaSql);
 
             try
             {
-                Usuarioopcion securityUserOption = db.Usuarioopcions.FirstOrDefault(x =>
-                x.Usuario.Equals(userOptionModel.user) && x.Opcion == userOptionModel.option);
-
-                // ACTUALIZAR USUARIO OPCION
-                if (securityUserOption != null)
+                // 🔍 Verificar que 'options' no esté vacío
+                if (userOptionModel.options == null || !userOptionModel.options.Any())
                 {
-                    securityUserOption.Permitido = userOptionModel.allowed;
-                    db.Usuarioopcions.Update(securityUserOption);
+                    return "Error: La lista 'options' es obligatoria y no puede estar vacía.";
+                }
 
+                Console.WriteLine($"Datos recibidos -> Usuario: {userOptionModel.user}, Opciones: {string.Join(",", userOptionModel.options)}, Permitido: {userOptionModel.allowed}");
+
+                int updatedCount = 0;
+
+                foreach (var optionId in userOptionModel.options)
+                {
+                    Usuarioopcion securityUserOption = db.Usuarioopcions.FirstOrDefault(x =>
+                        x.Usuario.Equals(userOptionModel.user) && x.Opcion == optionId);
+
+                    if (securityUserOption != null)
+                    {
+                        securityUserOption.Permitido = userOptionModel.allowed;
+                        db.Usuarioopcions.Update(securityUserOption);
+                        updatedCount++;
+                    }
+                }
+
+                // Si al menos una opción se actualizó, guardamos los cambios
+                if (updatedCount > 0)
+                {
                     db.SaveChanges();
-                    return "Actualizado exitosamente";
-                };
-                return "Registro no existente";
+                    return $"Actualizado exitosamente {updatedCount} opciones para el usuario {userOptionModel.user}.";
+                }
+
+                return "No se encontraron registros coincidentes.";
             }
             catch (Exception ex)
             {
-                throw new Exception($"No se pudo actualizar la opcion {userOptionModel.option} al usuario {userOptionModel.user} Error: " + ex.Message);
+                Console.WriteLine($"Error en la actualización: {ex.Message}");
+                return $"No se pudo actualizar las opciones para el usuario {userOptionModel.user}. Error: {ex.Message}";
             }
         }
+
 
 
 
@@ -941,19 +961,27 @@ namespace CommerceCore.BL.cc.Security
                 UsuarioOpcion => UsuarioOpcion.opcion.Menu,
                 menu => menu.Id,
                 (usuarioOpcion, menu) => new { usuarioOpcion, menu }
-            ).Where(u =>
-                u.menu.Aplicacion == aplication)
+            )
+            .Join(db.Aplicacions,  m => m.menu.plan, a => a.plan, (m, a) => new {m, a})
+            .Join(db.Usuarios, ap => ap.m.usuarioOpcion.usuarioOpcion.Usuario, us => us.Usuario1, (ap, us) => new {ap, us})
+            .Where(u =>
+                u.ap.m.menu.plan == u.ap.a.plan && u.ap.a.Id == aplication)
             .Select(x => new
                {
-                   usuario = x.usuarioOpcion.usuarioOpcion.Usuario,
-                   opcion = x.usuarioOpcion.opcion.Nombre,
-                   idOpcion = x.usuarioOpcion.opcion.Id,
-                   idUsuarioOpcion = x.usuarioOpcion.usuarioOpcion.Id,
-                   userId = $"{x.usuarioOpcion.usuarioOpcion.Usuario}_{x.usuarioOpcion.usuarioOpcion.Id}",
-                   nombreMostrar = $"{x.usuarioOpcion.opcion.Nombre} - usuario: {x.usuarioOpcion.usuarioOpcion.Usuario} - menú: {x.menu.Nombre}",
-                   claveVista = $"{x.usuarioOpcion.opcion.Nombre} - menú: {x.menu.Nombre}",
-                   parent = x.usuarioOpcion.usuarioOpcion.Usuario,
-                   selected = x.usuarioOpcion.usuarioOpcion.Permitido
+                   usuario = x.ap.m.usuarioOpcion.usuarioOpcion.Usuario,
+               //    usuario = x.usuarioOpcion.usuarioOpcion.Usuario,
+                opcion = x.ap.m.usuarioOpcion.opcion.Nombre,
+                   idOpcion = x.ap.m.usuarioOpcion.opcion.Id,
+                   idUsuarioOpcion = x.ap.m.usuarioOpcion.usuarioOpcion.Id,
+                   userId = $"{x.ap.m.usuarioOpcion.usuarioOpcion.Usuario}_{x.ap.m.usuarioOpcion.usuarioOpcion.Id}",
+                   nombreMostrar = $"{x.ap.m.usuarioOpcion.opcion.Nombre} - usuario: {x.us.userName} - menú: {x.ap.m.menu.Nombre}",
+                   claveVista = $"{x.ap.m.usuarioOpcion.opcion.Nombre} - menú: {x.ap.m.menu.Nombre}",
+                   parent = x.ap.m.usuarioOpcion.usuarioOpcion.Usuario,
+                   selected = x.ap.m.usuarioOpcion.usuarioOpcion.Permitido,
+                   plan = x.ap.a.plan,
+                   nameEnterprice = x.ap.a.Nombre,
+                   nameUser = x.us.Nombre,
+                   userName = x.us.userName
                }
             ).OrderBy(e => e.usuario);
             return result;
