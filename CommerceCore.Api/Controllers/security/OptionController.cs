@@ -35,7 +35,7 @@ namespace CommerceCore.Api.Controllers.security
 
 
         /// <summary>
-        /// Obtener aplicaciones
+        /// Obtener opciones por plan asignado
         /// </summary>
         /// <returns></returns>
         [HttpGet()]
