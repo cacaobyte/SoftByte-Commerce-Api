@@ -25,7 +25,7 @@ namespace CommerceCore.BL.cc.logistics
         /// Obtiene todas las existencias de artículos que no son para mayoreo
         /// </summary>
         /// <returns>Lista de artículos para los clientes</returns>
-        public List<ArticleView> GetArticles()
+        public List<ArticleView> GetArticles( int aplication)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace CommerceCore.BL.cc.logistics
                 {
                     // Filtra artículos que no son de mayoreo (no empiezan con 'M') y los proyecta a ArticleView
                     return db.Articulos
-                             .Where(a => !string.IsNullOrEmpty(a.Articulo1) && !a.Articulo1.StartsWith("M") && a.Activo == true)
+                             .Where(a => !string.IsNullOrEmpty(a.Articulo1) && !a.Articulo1.StartsWith("M") && a.Activo == true && a.Aplicacion == aplication)
                              .Select(a => new ArticleView
                              {
                                  Articulo1 = a.Articulo1,
@@ -117,7 +117,7 @@ namespace CommerceCore.BL.cc.logistics
         /// Obtiene todas las existencias de artículos que son para mayoreo
         /// </summary>
         /// <returns>Lista de artículos para mayoreo</returns>
-        public List<Articulo> GetWholesaleItems()
+        public List<Articulo> GetWholesaleItems(int aplication)
         {
             try
             {
@@ -125,7 +125,7 @@ namespace CommerceCore.BL.cc.logistics
                 {
                     // Filtra artículos que son de mayoreo (empiezan con 'M')
                     return db.Articulos
-                             .Where(a => !string.IsNullOrEmpty(a.Articulo1) && a.Articulo1.StartsWith("M"))
+                             .Where(a => !string.IsNullOrEmpty(a.Articulo1) && a.Articulo1.StartsWith("M") && a.Aplicacion == aplication)
                              .ToList();
                 }
             }
@@ -141,7 +141,7 @@ namespace CommerceCore.BL.cc.logistics
         /// Obtiene todas las existencias de bodegas
         /// </summary>
         /// <returns>Lista de ExistenciaBodega (ML)</returns>
-        public List<ExistenciaBodega> GetAllWarehouseStocks()
+        public List<ExistenciaBodega> GetAllWarehouseStocks(int aplication)
         {
             try
             {
@@ -194,14 +194,14 @@ namespace CommerceCore.BL.cc.logistics
         /// Obtiene todas las  bodegas
         /// </summary>
         /// <returns>Lista de Bodega (ML)</returns>
-        public List<Bodega> GetAllWarehouse()
+        public List<Bodega> GetAllWarehouse(int aplication)
         {
             try
             {
                 using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
                 {
                     // Mapear manualmente el modelo DAL al modelo ML
-                    return db.Bodegas.Select(b => new Bodega
+                    return db.Bodegas.Where(b => b.Aplicacion == aplication).Select(b => new Bodega
                     {
                         Bodega1 = b.Bodega1,
                         Descripcion = b.Descripcion,
@@ -240,14 +240,14 @@ namespace CommerceCore.BL.cc.logistics
         /// Obtiene todas las  bodegas
         /// </summary>
         /// <returns>Lista de Bodega (ML)</returns>
-        public List<Bodega> GetAllWarehouseActive()
+        public List<Bodega> GetAllWarehouseActive(int aplication)
         {
             try
             {
                 using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
                 {
                     // Mapear manualmente el modelo DAL al modelo ML
-                    return db.Bodegas.Where(b => b.Activo == true).Select(b => new Bodega
+                    return db.Bodegas.Where(b => b.Activo == true && b.Aplicacion == aplication).Select(b => new Bodega
                     {
                         Bodega1 = b.Bodega1,
                         Descripcion = b.Descripcion,

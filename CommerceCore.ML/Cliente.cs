@@ -8,7 +8,7 @@ namespace CommerceCore.ML
 {
     public partial class Cliente
     {
-        public string Cliente1 { get; set; } = null!;
+        public string? Cliente1 { get; set; } = null!;
 
         public string PrimerNombre { get; set; } = null!;
 

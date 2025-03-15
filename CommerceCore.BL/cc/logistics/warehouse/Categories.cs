@@ -20,7 +20,7 @@ namespace CommerceCore.BL.cc.logistics.warehouse
             configuration = settings;
         }
 
-        public List<Categoria> GetListCategoriesActive(string userName)
+        public List<Categoria> GetListCategoriesActive(string userName, int aplication)
         {
             try
             {
@@ -28,7 +28,7 @@ namespace CommerceCore.BL.cc.logistics.warehouse
                 {
                     var categories = new List<Categoria>();
                      categories = db.Categorias
-                    .Where(c => c.Estatus == true)  // Filtra solo categorías activas
+                    .Where(c => c.Estatus == true && c.aplicacion == aplication)  // Filtra solo categorías activas
                     .Select(c => new Categoria
                     {
                         IdCategoria = c.IdCategoria,
@@ -68,7 +68,7 @@ namespace CommerceCore.BL.cc.logistics.warehouse
             }
         }
 
-        public List<Categoria> GetListCategories(string userName)
+        public List<Categoria> GetListCategories(string userName, int aplication)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace CommerceCore.BL.cc.logistics.warehouse
 
                        // Incluye las subcategorías relacionadas
                        Subcategoria = db.Subcategorias
-                           .Where(sc => sc.IdCategoria == c.IdCategoria)
+                           .Where(sc => sc.IdCategoria == c.IdCategoria && c.aplicacion == aplication)
                            .Select(sc => new Subcategoria
                            {
                                IdSubcategoria = sc.IdSubcategoria,
@@ -152,7 +152,7 @@ namespace CommerceCore.BL.cc.logistics.warehouse
         }
 
 
-        public bool CreateCategory(CategoriaCreateDto categoriaCreate, string userName)
+        public bool CreateCategory(CategoriaCreateDto categoriaCreate, string userName, int aplication)
         {
             try
             {
@@ -167,7 +167,8 @@ namespace CommerceCore.BL.cc.logistics.warehouse
                         CreateBy = userName,
                         UpdateBy = userName,
                         FechaCreacion = DateTime.Now,
-                        FechaActualizacion = DateTime.Now
+                        FechaActualizacion = DateTime.Now,
+                        aplicacion = aplication
                     };
 
                     // Agregar la nueva categoría a la base de datos
@@ -187,7 +188,7 @@ namespace CommerceCore.BL.cc.logistics.warehouse
 
 
 
-        public List<CategoriesList> GetListCategoriesSubCategories()
+        public List<CategoriesList> GetListCategoriesSubCategories(int aplication)
         {
             try
             {
@@ -196,7 +197,7 @@ namespace CommerceCore.BL.cc.logistics.warehouse
                 var categoriesList = new List<CategoriesList>();
 
                     categoriesList = db.Categorias
-                    .Where(c => c.Estatus) 
+                    .Where(c => c.Estatus && c.aplicacion == aplication) 
                     .GroupJoin(
                         db.Subcategorias,
                         c => c.IdCategoria, 
