@@ -76,6 +76,7 @@ namespace CommerceCore.ML
         public int? Edad { get; set; }
 
         public bool? Notificar { get; set; }
+        public int? aplicacion { get; set;  }
     }
 
 }

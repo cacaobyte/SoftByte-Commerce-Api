@@ -28,8 +28,8 @@ namespace CommerceCore.Api.Controllers.security
         {
             try
             {
-
-                return Ok(JsonSerializer.Serialize(blServiceSecurity.GetRoleOptions(IdAplication)));
+                int app = 1;
+                return Ok(blServiceSecurity.GetRoleOptions(app));
             }
             catch (Exception ex)
             {
@@ -65,7 +65,7 @@ namespace CommerceCore.Api.Controllers.security
         {
             try
             {
-                return Ok(JsonSerializer.Serialize(blServiceSecurity.DeleteRoleOption(rolOptionId)));
+                return Ok(blServiceSecurity.DeleteRoleOption(rolOptionId));
             }
             catch (Exception ex)
             {
