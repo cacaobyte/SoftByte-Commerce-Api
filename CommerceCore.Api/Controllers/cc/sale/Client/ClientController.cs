@@ -30,6 +30,31 @@ namespace CommerceCore.Api.Controllers.cc.sale.Client
             }
         }
 
+        /// <summary>
+        /// Obtiene la lista de información de contacto de todos los clientes.
+        /// </summary>
+        /// <returns>Lista de objetos ContactClients con la información de contacto.</returns>
+        [HttpGet("contacts")]
+        public IActionResult GetAllClientContacts()
+        {
+            try
+            {
+                var result = client.GetAllClientContacts(IdAplication);
+
+                if (result == null || !result.Any())
+                {
+                    return NotFound(new { message = "No se encontró información de contacto para los clientes." });
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+            }
+        }
+
+
 
         /// <summary>
         /// Crea un nuevo cliente con su información y sube su imagen a Cloudflare si es necesario.
@@ -55,6 +80,35 @@ namespace CommerceCore.Api.Controllers.cc.sale.Client
                 return StatusCode(500, $"Error al crear el cliente: {ex.Message}");
             }
         }
+
+
+        /// <summary>
+        /// Actualiza la información de un cliente existente y sube su imagen si se proporciona.
+        /// </summary>
+        /// <param name="updatedClienteData">Información actualizada del cliente.</param>
+        /// <param name="imageFile">Nueva imagen del cliente (opcional).</param>
+        /// <returns>Cliente actualizado con su URL de imagen.</returns>
+        [HttpPut("updateClient")]
+        public async Task<IActionResult> UpdateClient([FromForm] Cliente updatedClienteData, [FromForm] IFormFile? imageFile)
+        {
+            try
+            {
+                if (updatedClienteData == null || string.IsNullOrEmpty(updatedClienteData.Cliente1))
+                {
+                    return BadRequest("El código del cliente y la información son obligatorios.");
+                }
+
+                var updatedClient = await client.UpdateClienteAsync(updatedClienteData, imageFile, userName);
+
+                return Ok(updatedClient);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al actualizar el cliente: {ex.Message}");
+            }
+        }
+
+
 
     }
 }
