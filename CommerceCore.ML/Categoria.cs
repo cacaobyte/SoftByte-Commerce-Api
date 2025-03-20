@@ -20,6 +20,7 @@ public partial class Categoria
     public DateTime? FechaCreacion { get; set; }
 
     public DateTime? FechaActualizacion { get; set; }
+    public int? aplicacion { get; set; }
 
     public virtual ICollection<Subcategoria> Subcategoria { get; set; } = new List<Subcategoria>();
 }

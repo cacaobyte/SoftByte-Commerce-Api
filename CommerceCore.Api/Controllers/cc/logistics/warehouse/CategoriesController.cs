@@ -24,7 +24,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics.warehouse
         {
             try
             {
-                var result = blCategories.GetListCategoriesActive(userName);
+                var result = blCategories.GetListCategoriesActive(userName, IdAplication);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -42,7 +42,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics.warehouse
         {
             try
             {
-                var result = blCategories.GetListCategories(userName);
+                var result = blCategories.GetListCategories(userName, IdAplication);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -60,7 +60,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics.warehouse
         {
             try
             {
-                var result = blCategories.GetListCategoriesSubCategories();
+                var result = blCategories.GetListCategoriesSubCategories(IdAplication);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -115,7 +115,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics.warehouse
 
             try
             {
-                var result = blCategories.CreateCategory(categoriaCreate, userName);
+                var result = blCategories.CreateCategory(categoriaCreate, userName, IdAplication);
                 if (result)
                 {
                     return Ok(new { message = "Categoría creada con éxito.", categoria = categoriaCreate });

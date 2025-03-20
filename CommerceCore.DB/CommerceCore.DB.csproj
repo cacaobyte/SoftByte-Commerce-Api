@@ -10,7 +10,6 @@
     <Folder Include="TABLAS\Articulo\Categorias\" />
     <Folder Include="TABLAS\Seguridad\" />
     <Folder Include="TABLAS\Soporte\" />
-    <Folder Include="TABLAS\ventas\" />
     <Folder Include="TRIGGERS\" />
   </ItemGroup>
 

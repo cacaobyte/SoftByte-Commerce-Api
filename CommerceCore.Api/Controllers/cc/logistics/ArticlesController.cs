@@ -25,7 +25,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics
         {
             try
             {
-                var result = blArticles.GetArticles();
+                var result = blArticles.GetArticles(IdAplication);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -62,7 +62,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics
         {
             try
             {
-                var result = blArticles.GetWholesaleItems();
+                var result = blArticles.GetWholesaleItems(IdAplication);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -81,7 +81,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics
         {
             try
             {
-                var result = blArticles.GetAllWarehouseStocks();
+                var result = blArticles.GetAllWarehouseStocks(IdAplication);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -102,7 +102,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics
         {
             try
             {
-                var result = blArticles.GetAllWarehouse();
+                var result = blArticles.GetAllWarehouse(IdAplication);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -122,7 +122,7 @@ namespace CommerceCore.Api.Controllers.cc.logistics
         {
             try
             {
-                var result = blArticles.GetAllWarehouse();
+                var result = blArticles.GetAllWarehouse(IdAplication);
                 return Ok(result);
             }
             catch (Exception ex)
