@@ -1,0 +1,42 @@
+﻿-- 📌 Crear tabla de Cotizaciones en el esquema softbytecommerce
+CREATE TABLE softbytecommerce.cotizaciones (
+    id_cotizacion SERIAL PRIMARY KEY,
+    fecha_creacion TIMESTAMP NOT NULL,
+    fecha_actualizacion TIMESTAMP NOT NULL,
+    cliente_id UUID NULL,
+    nombre_cliente VARCHAR(100) NOT NULL,
+    apellido_cliente VARCHAR(100) NOT NULL,
+    correo VARCHAR(100) NULL,
+    telefono VARCHAR(20) NULL,
+    tipo_pago VARCHAR(20) NOT NULL,
+    descuento_cliente DECIMAL(5,2) NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+    descuento_total DECIMAL(10,2) NOT NULL,
+    impuestos DECIMAL(10,2) NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    estado VARCHAR(20) NOT NULL,
+    moneda VARCHAR(10) NOT NULL,
+    origen VARCHAR(20) NOT NULL,
+    usuario_creador VARCHAR(255) NOT NULL,
+    usuario_actualiza VARCHAR(255) NULL,
+    usuario_aprueba VARCHAR(255) NULL,
+    notas TEXT NULL
+);
+
+-- 📌 Crear tabla de Cotización Detalle en el esquema softbytecommerce
+CREATE TABLE softbytecommerce.cotizacion_detalle (
+    id_detalle_cotizacion SERIAL PRIMARY KEY,
+    id_cotizacion INT NOT NULL,
+    id_articulo INT NOT NULL,
+    nombre_articulo VARCHAR(150) NOT NULL,
+    precio_unitario DECIMAL(10,2) NOT NULL,
+    cantidad INT NOT NULL CHECK (cantidad > 0),
+    descuento_aplicado DECIMAL(5,2) NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+    impuestos DECIMAL(10,2) NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    fecha_creacion TIMESTAMP NOT NULL,
+    fecha_actualizacion TIMESTAMP NOT NULL,
+    usuario_creador VARCHAR(255) NOT NULL,
+    usuario_actualiza VARCHAR(255) NULL
+);
