@@ -40,3 +40,33 @@ CREATE TABLE softbytecommerce.cotizacion_detalle (
     usuario_creador VARCHAR(255) NOT NULL,
     usuario_actualiza VARCHAR(255) NULL
 );
+
+
+
+
+## Edicion del manejo de las fechas en la tabla
+
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_name IN ('cotizaciones', 'cotizacion_detalle')
+AND column_name IN ('fecha_creacion', 'fecha_actualizacion');
+
+
+ALTER TABLE softbytecommerce.cotizaciones 
+ALTER COLUMN fecha_creacion TYPE TIMESTAMP WITH TIME ZONE USING fecha_creacion::TIMESTAMP WITH TIME ZONE,
+ALTER COLUMN fecha_actualizacion TYPE TIMESTAMP WITH TIME ZONE USING fecha_actualizacion::TIMESTAMP WITH TIME ZONE;
+
+ALTER TABLE softbytecommerce.cotizacion_detalle 
+ALTER COLUMN fecha_creacion TYPE TIMESTAMP WITH TIME ZONE USING fecha_creacion::TIMESTAMP WITH TIME ZONE,
+ALTER COLUMN fecha_actualizacion TYPE TIMESTAMP WITH TIME ZONE USING fecha_actualizacion::TIMESTAMP WITH TIME ZONE;
+
+
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_name IN ('cotizaciones', 'cotizacion_detalle')
+AND column_name IN ('fecha_creacion', 'fecha_actualizacion');
+
+
+
+
+
