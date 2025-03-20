@@ -29,6 +29,10 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Bodega> Bodegas { get; set; }
     public virtual DbSet<Categoria> Categorias { get; set; }
     public virtual DbSet<Cliente> Clientes { get; set; }
+
+    public virtual DbSet<CotizacionDetalle> CotizacionDetalles { get; set; }
+
+    public virtual DbSet<Cotizacione> Cotizaciones { get; set; }
     public virtual DbSet<Empresa> Empresas { get; set; }
 
     public virtual DbSet<ExistenciaBodega> ExistenciaBodegas { get; set; }
@@ -452,6 +456,116 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(10)
                 .HasColumnName("zona");
         });
+
+
+        modelBuilder.Entity<CotizacionDetalle>(entity =>
+        {
+            entity.HasKey(e => e.IdDetalleCotizacion).HasName("cotizacion_detalle_pkey");
+
+            entity.ToTable("cotizacion_detalle", "softbytecommerce");
+
+            entity.Property(e => e.IdDetalleCotizacion).HasColumnName("id_detalle_cotizacion");
+            entity.Property(e => e.Cantidad).HasColumnName("cantidad");
+            entity.Property(e => e.DescuentoAplicado)
+                .HasPrecision(5, 2)
+                .HasColumnName("descuento_aplicado");
+            entity.Property(e => e.FechaActualizacion)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("fecha_actualizacion");
+            entity.Property(e => e.FechaCreacion)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.IdArticulo).HasColumnName("id_articulo");
+            entity.Property(e => e.IdCotizacion).HasColumnName("id_cotizacion");
+            entity.Property(e => e.Impuestos)
+                .HasPrecision(10, 2)
+                .HasColumnName("impuestos");
+            entity.Property(e => e.NombreArticulo)
+                .HasMaxLength(150)
+                .HasColumnName("nombre_articulo");
+            entity.Property(e => e.PrecioUnitario)
+                .HasPrecision(10, 2)
+                .HasColumnName("precio_unitario");
+            entity.Property(e => e.Subtotal)
+                .HasPrecision(10, 2)
+                .HasColumnName("subtotal");
+            entity.Property(e => e.Total)
+                .HasPrecision(10, 2)
+                .HasColumnName("total");
+            entity.Property(e => e.UsuarioActualiza)
+                .HasMaxLength(255)
+                .HasColumnName("usuario_actualiza");
+            entity.Property(e => e.UsuarioCreador)
+                .HasMaxLength(255)
+                .HasColumnName("usuario_creador");
+        });
+
+        modelBuilder.Entity<Cotizacione>(entity =>
+        {
+            entity.HasKey(e => e.IdCotizacion).HasName("cotizaciones_pkey");
+
+            entity.ToTable("cotizaciones", "softbytecommerce");
+
+            entity.Property(e => e.IdCotizacion).HasColumnName("id_cotizacion");
+            entity.Property(e => e.ApellidoCliente)
+                .HasMaxLength(100)
+                .HasColumnName("apellido_cliente");
+            entity.Property(e => e.ClienteId).HasColumnName("cliente_id");
+            entity.Property(e => e.Correo)
+                .HasMaxLength(100)
+                .HasColumnName("correo");
+            entity.Property(e => e.DescuentoCliente)
+                .HasPrecision(5, 2)
+                .HasColumnName("descuento_cliente");
+            entity.Property(e => e.DescuentoTotal)
+                .HasPrecision(10, 2)
+                .HasColumnName("descuento_total");
+            entity.Property(e => e.Estado)
+                .HasMaxLength(20)
+                .HasColumnName("estado");
+            entity.Property(e => e.FechaActualizacion)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("fecha_actualizacion");
+            entity.Property(e => e.FechaCreacion)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.Impuestos)
+                .HasPrecision(10, 2)
+                .HasColumnName("impuestos");
+            entity.Property(e => e.Moneda)
+                .HasMaxLength(10)
+                .HasColumnName("moneda");
+            entity.Property(e => e.NombreCliente)
+                .HasMaxLength(100)
+                .HasColumnName("nombre_cliente");
+            entity.Property(e => e.Notas).HasColumnName("notas");
+            entity.Property(e => e.Origen)
+                .HasMaxLength(20)
+                .HasColumnName("origen");
+            entity.Property(e => e.Subtotal)
+                .HasPrecision(10, 2)
+                .HasColumnName("subtotal");
+            entity.Property(e => e.Telefono)
+                .HasMaxLength(20)
+                .HasColumnName("telefono");
+            entity.Property(e => e.TipoPago)
+                .HasMaxLength(20)
+                .HasColumnName("tipo_pago");
+            entity.Property(e => e.Total)
+                .HasPrecision(10, 2)
+                .HasColumnName("total");
+            entity.Property(e => e.UsuarioActualiza)
+                .HasMaxLength(255)
+                .HasColumnName("usuario_actualiza");
+            entity.Property(e => e.UsuarioAprueba)
+                .HasMaxLength(255)
+                .HasColumnName("usuario_aprueba");
+            entity.Property(e => e.UsuarioCreador)
+                .HasMaxLength(255)
+                .HasColumnName("usuario_creador");
+        });
+
+
 
         modelBuilder.Entity<Empresa>(entity =>
         {

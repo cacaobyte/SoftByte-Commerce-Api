@@ -71,6 +71,7 @@ namespace CommerceCore.ML
         public bool? Activo { get; set; }
 
         public bool? Notificar { get; set; }
+        public int? aplicacion { get; set; }
 
         public virtual Bodega? BodegaNavigation { get; set; }
     }
