@@ -14,7 +14,7 @@ namespace CommerceCore.ML
 
         public DateTime FechaActualizacion { get; set; }
 
-        public Guid? ClienteId { get; set; }
+        public string? ClienteId { get; set; }
 
         public string NombreCliente { get; set; } = null!;
 
