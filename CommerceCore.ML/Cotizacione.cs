@@ -49,6 +49,7 @@ namespace CommerceCore.ML
         public string? UsuarioAprueba { get; set; }
 
         public string? Notas { get; set; }
+        public int? aplicacion { get; set; }
     }
 
 }

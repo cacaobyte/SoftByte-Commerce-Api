@@ -35,6 +35,7 @@ namespace CommerceCore.ML
         public string UsuarioCreador { get; set; } = null!;
 
         public string? UsuarioActualiza { get; set; }
+        public int? aplicacion { get; set; }
     }
 
 }
