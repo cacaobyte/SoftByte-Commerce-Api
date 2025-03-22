@@ -73,7 +73,8 @@ namespace CommerceCore.BL.cc.sale.quotes
                         Moneda = request.Moneda,
                         Origen = request.Origen,
                         UsuarioCreador = userName,
-                        Notas = request.Notas
+                        Notas = request.Notas,
+                        aplicacion = aplication
                     };
 
                     db.Cotizaciones.Add(newQuote);
@@ -97,7 +98,8 @@ namespace CommerceCore.BL.cc.sale.quotes
                         Total = detalle.Total,
                         FechaCreacion = fechaActual,
                         FechaActualizacion = fechaActual,
-                        UsuarioCreador = userName
+                        UsuarioCreador = userName,
+                        aplicacion = aplication
                     }).ToList();
 
                     db.CotizacionDetalles.AddRange(quoteDetails);

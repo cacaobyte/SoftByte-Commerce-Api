@@ -13,6 +13,7 @@ namespace CommerceCore.ML.cc.sale.Quotes
         public DateTime FechaActualizacion { get; set; } = DateTime.UtcNow;
 
         public string? ClienteId { get; set; } = "";
+        public int? aplicacion { get; set; }
 
         [Required]
         [MaxLength(100)]
@@ -79,6 +80,7 @@ namespace CommerceCore.ML.cc.sale.Quotes
     {
         [Required]
         public string? IdArticulo { get; set; }
+        public int? aplicacion { get; set; }
 
         [Required]
         [MaxLength(150)]
