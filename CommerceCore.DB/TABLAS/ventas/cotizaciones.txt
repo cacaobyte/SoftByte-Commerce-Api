@@ -66,6 +66,16 @@ FROM information_schema.columns
 WHERE table_name IN ('cotizaciones', 'cotizacion_detalle')
 AND column_name IN ('fecha_creacion', 'fecha_actualizacion');
 
+-- Cambiar cliente_id de UUID a VARCHAR(50) en cotizaciones
+ALTER TABLE softbytecommerce.cotizaciones
+  ALTER COLUMN cliente_id TYPE VARCHAR(50);
+
+-- Cambiar id_articulo de INT a VARCHAR(50) en cotizacion_detalle
+ALTER TABLE softbytecommerce.cotizacion_detalle
+  ALTER COLUMN id_articulo TYPE VARCHAR(50);
+
+
+
 
 
 

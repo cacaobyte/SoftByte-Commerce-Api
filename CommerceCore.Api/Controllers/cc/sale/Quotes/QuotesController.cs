@@ -48,7 +48,7 @@ namespace CommerceCore.Api.Controllers.cc.sale.Quotes
                 }
 
                 // Crear la cotización
-                var nuevaCotizacion = quotesBl.CreateQuote(request);
+                var nuevaCotizacion = quotesBl.CreateQuote(request, userName, IdAplication);
 
                 // Verificar si la cotización fue creada correctamente
                 if (nuevaCotizacion == null || nuevaCotizacion.IdCotizacion <= 0)

@@ -40,7 +40,7 @@ namespace CommerceCore.BL.cc.sale.quotes
 
 
 
-        public Cotizacione CreateQuote(CreateQuoteRequest request)
+        public Cotizacione CreateQuote(CreateQuoteRequest request, string userName, int aplication)
         {
             try
             {
@@ -72,7 +72,7 @@ namespace CommerceCore.BL.cc.sale.quotes
                         Estado = request.Estado,
                         Moneda = request.Moneda,
                         Origen = request.Origen,
-                        UsuarioCreador = request.UsuarioCreador,
+                        UsuarioCreador = userName,
                         Notas = request.Notas
                     };
 
@@ -97,7 +97,7 @@ namespace CommerceCore.BL.cc.sale.quotes
                         Total = detalle.Total,
                         FechaCreacion = fechaActual,
                         FechaActualizacion = fechaActual,
-                        UsuarioCreador = request.UsuarioCreador
+                        UsuarioCreador = userName
                     }).ToList();
 
                     db.CotizacionDetalles.AddRange(quoteDetails);

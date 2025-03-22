@@ -12,7 +12,7 @@ namespace CommerceCore.ML.cc.sale.Quotes
         [Required]
         public DateTime FechaActualizacion { get; set; } = DateTime.UtcNow;
 
-        public Guid? ClienteId { get; set; } = Guid.NewGuid();
+        public string? ClienteId { get; set; } = "";
 
         [Required]
         [MaxLength(100)]
@@ -78,7 +78,7 @@ namespace CommerceCore.ML.cc.sale.Quotes
     public class CreateQuoteDetailRequest
     {
         [Required]
-        public int IdArticulo { get; set; }
+        public string? IdArticulo { get; set; }
 
         [Required]
         [MaxLength(150)]
