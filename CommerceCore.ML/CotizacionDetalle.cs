@@ -12,7 +12,7 @@ namespace CommerceCore.ML
 
         public int IdCotizacion { get; set; }
 
-        public int IdArticulo { get; set; }
+        public string IdArticulo { get; set; }
 
         public string NombreArticulo { get; set; } = null!;
 
