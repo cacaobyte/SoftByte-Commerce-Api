@@ -21,7 +21,7 @@ namespace CommerceCore.BL.cc.sale.quotes
             configuration = settings;
         }
 
-        public List<Cotizacione> GetQuotes(string userName, int aplication)
+        public List<Cotizacione> GetQuotesCacao(string userName)
         {
             try
             {
@@ -39,7 +39,13 @@ namespace CommerceCore.BL.cc.sale.quotes
         }
 
 
-
+        /// <summary>
+        /// Agrega una nueva cotización.
+        /// </summary>
+        /// <param name="request">Objeto con los datos de la cotización</param>
+        /// <param name="userName">Usuario que crea la cotización</param>
+        /// <param name="aplication">Id de la aplicacion</param>
+        /// <returns>Mensaje de éxito o error</returns>
         public Cotizacione CreateQuote(CreateQuoteRequest request, string userName, int aplication)
         {
             try
@@ -117,6 +123,73 @@ namespace CommerceCore.BL.cc.sale.quotes
                 throw new Exception($"Error inesperado: {ex.Message}");
             }
         }
+
+
+        /// <summary>
+        /// Consulta los datos de la cotizaciones por aplicacion.
+        /// </summary>
+        /// <returns>Mensaje de éxito o error</returns>
+        public List<QuoteResponse> GetQuotes(int aplication)
+        {
+            using (var db = new SoftByte(configuration.appSettings.cadenaSql))
+            {
+                var cotizaciones = db.Cotizaciones
+                    .Where(c => c.aplicacion == aplication)
+                    .ToList();
+
+                var detalles = db.CotizacionDetalles
+                    .Where(d => d.aplicacion == aplication)
+                    .ToList();
+
+                return cotizaciones.Select(cot => new QuoteResponse
+                {
+                    IdCotizacion = cot.IdCotizacion,
+                    FechaCreacion = cot.FechaCreacion,
+                    FechaActualizacion = cot.FechaActualizacion,
+                    ClienteId = cot.ClienteId,
+                    NombreCliente = cot.NombreCliente,
+                    ApellidoCliente = cot.ApellidoCliente,
+                    Correo = cot.Correo,
+                    Telefono = cot.Telefono,
+                    TipoPago = cot.TipoPago,
+                    DescuentoCliente = cot.DescuentoCliente,
+                    Subtotal = cot.Subtotal,
+                    DescuentoTotal = cot.DescuentoTotal,
+                    Impuestos = cot.Impuestos,
+                    Total = cot.Total,
+                    Estado = cot.Estado,
+                    Moneda = cot.Moneda,
+                    Origen = cot.Origen,
+                    UsuarioCreador = cot.UsuarioCreador,
+                    UsuarioActualiza = cot.UsuarioActualiza,
+                    UsuarioAprueba = cot.UsuarioAprueba,
+                    Notas = cot.Notas,
+                    aplicacion = cot.aplicacion,
+                    Detalles = detalles
+                        .Where(d => d.IdCotizacion == cot.IdCotizacion)
+                        .Select(d => new QuoteDetailResponse
+                        {
+                            IdDetalleCotizacion = d.IdDetalleCotizacion,
+                            IdCotizacion = d.IdCotizacion,
+                            IdArticulo = d.IdArticulo,
+                            NombreArticulo = d.NombreArticulo,
+                            PrecioUnitario = d.PrecioUnitario,
+                            Cantidad = d.Cantidad,
+                            DescuentoAplicado = d.DescuentoAplicado,
+                            Subtotal = d.Subtotal,
+                            Impuestos = d.Impuestos,
+                            Total = d.Total,
+                            FechaCreacion = d.FechaCreacion,
+                            FechaActualizacion = d.FechaActualizacion,
+                            UsuarioCreador = d.UsuarioCreador,
+                            UsuarioActualiza = d.UsuarioActualiza,
+                            aplicacion = d.aplicacion
+                        }).ToList()
+                }).ToList();
+            }
+        }
+
+
 
 
 
