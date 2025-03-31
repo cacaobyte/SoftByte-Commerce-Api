@@ -54,6 +54,26 @@ namespace CommerceCore.Api.Controllers.cc.logistics
         }
 
         /// <summary>
+        /// Devuelve las existencias de artículos para tienda y clientes minuristas
+        /// <param name="warehouseSelected">Bodega selecionada</param>
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("articlesWarehouse/{warehouseSelected}")]
+        public IActionResult GetArticlesSelectedWarehouse(string warehouseSelected)
+        {
+            try
+            {
+
+                var result = blArticles.GetArticlesSelectedWarehouse(warehouseSelected);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while retrieving the articles.{ex}");
+            }
+        }
+
+        /// <summary>
         /// Devuelve las existencias de artículos para mayoreo
         /// </summary>
         /// <returns></returns>

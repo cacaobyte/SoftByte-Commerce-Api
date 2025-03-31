@@ -17,12 +17,12 @@ namespace CommerceCore.Api.Controllers.cc.sale.Quotes
         /// Devuelve las regiones existentes
         /// </summary>
         /// <returns></returns>
-        [HttpGet("allQuotes")]
-        public IActionResult GetAllQuotes()
+        [HttpGet("allQuoCacao")]
+        public IActionResult GetAllQuotesCacaoByte()
         {
             try
             {
-                var result = quotesBl.GetQuotes(userName, IdAplication);
+                var result = quotesBl.GetQuotesCacao(userName);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -71,6 +71,22 @@ namespace CommerceCore.Api.Controllers.cc.sale.Quotes
                 return StatusCode(500, new { message = "Error inesperado al crear la cotización", error = ex.Message });
             }
         }
+
+
+        [HttpGet("allQuotes")]
+        public IActionResult GetAllQuotes()
+        {
+            try
+            {
+                var result = quotesBl.GetQuotes(IdAplication);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al obtener las cotizaciones", error = ex.Message });
+            }
+        }
+
 
 
 
