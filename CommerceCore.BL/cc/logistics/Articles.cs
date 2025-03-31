@@ -112,6 +112,56 @@ namespace CommerceCore.BL.cc.logistics
             }
         }
 
+        /// <summary>
+        /// Obtiene todas las existencias de artículos que no son para mayoreo y bodega selecionada de cotizaciones
+        /// </summary>
+        /// <returns>Lista de artículos para los clientes</returns>
+        public List<ArticleView> GetArticlesSelectedWarehouse(string warehouse)
+        {
+            try
+            {
+                if (warehouse == null)
+                {
+                    throw new Exception($"No se obtuvo la bodega para traer los articulos");
+                }
+
+                using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
+                {
+                    var result = db.Articulos
+                                    .Join(db.ExistenciaBodegas, a => a.Articulo1, eb => eb.Articulo, (a, eb) => new { a, eb })
+                                    .Where(x => !string.IsNullOrEmpty(x.a.Articulo1) && !x.a.Articulo1.StartsWith("M") && x.eb.Bodega == warehouse)
+                                    .Select(x => new ArticleView
+                                    {
+                                        Articulo1 = x.a.Articulo1,
+                                        Descripcion = x.a.Descripcion,
+                                        Foto = x.a.Foto,
+                                        Categoria = x.a.Categoria,
+                                        Precio = x.a.Precio,
+                                        PesoNeto = x.a.PesoNeto,
+                                        PesoBruto = x.a.PesoBruto,
+                                        Volumen = x.a.Volumen,
+                                        Activo = x.a.Activo,
+                                        Createdby = x.a.Createdby,
+                                        Updatedby = x.a.Updatedby,
+                                        Fechacreacion = x.a.Fechacreacion,
+                                        Fechaactualizacion = x.a.Fechaactualizacion,
+                                        SubCategoria = x.a.SubCategoria,
+                                        clasificación = x.a.Clasificacion,
+                                        disponible = x.eb.CantDisponible,
+                                        existencias = x.eb.CantDisponible + x.eb.CantReservada,
+                                        reservada = x.eb.CantReservada,
+                                        totalValorProducto = x.eb.CantDisponible * x.a.Precio,
+                                        bodega = x.eb.Bodega,
+                                    })
+                                    .ToList();
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while retrieving the articles.", ex);
+            }
+        }
 
         /// <summary>
         /// Obtiene todas las existencias de artículos que son para mayoreo
