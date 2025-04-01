@@ -14,6 +14,7 @@ namespace CommerceCore.Api.Controllers.cc.sale.Quotes
     {
 
         private QuotesBl quotesBl = new QuotesBl(Tool.configuration);
+
         /// <summary>
         /// Devuelve las regiones existentes
         /// </summary>
