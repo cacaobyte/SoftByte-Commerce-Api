@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using CommerceCore.BL.cc.sale.quotes;
 using CommerceCore.ML.cc.sale.Quotes;
 using Microsoft.EntityFrameworkCore;
+using CommerceCore.BL.cc.logistics;
 
 
 namespace CommerceCore.Api.Controllers.cc.sale.Quotes
@@ -83,12 +84,54 @@ namespace CommerceCore.Api.Controllers.cc.sale.Quotes
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Error al obtener las cotizaciones", error = ex.Message });
+                throw new Exception(ex.Message);
+            }
+        }
+
+
+        [HttpGet("quotesStores")]
+        public IActionResult GetAllQuotesStores()
+        {
+            try
+            {
+                var result = quotesBl.GetQuotesStores(IdAplication, storeCode);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpGet("myQuotes")]
+        public IActionResult GetMyQuotes()
+        {
+            try
+            {
+                var result = quotesBl.GetMyQuotes(IdAplication, userName);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
 
 
 
+        [HttpGet("metricsQuotes")]
+        public IActionResult GetMetricsQoutes()
+        {
+            try
+            {
+                var result = quotesBl.GetQuotesDashboard(IdAplication);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
     }
 }
