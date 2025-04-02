@@ -190,6 +190,225 @@ namespace CommerceCore.BL.cc.sale.quotes
         }
 
 
+        /// <summary>
+        /// Consulta los datos de la cotizaciones por mi tienda.
+        /// </summary>
+        /// <returns>Mensaje de éxito o error</returns>
+        public List<QuoteResponse> GetQuotesStores(int aplication, string store)
+        {
+            using (var db = new SoftByte(configuration.appSettings.cadenaSql))
+            {
+                var result = db.Cotizaciones
+                    .Where(c => c.aplicacion == aplication && c.Origen == store)
+                    .Select(c => new QuoteResponse
+                    {
+                        IdCotizacion = c.IdCotizacion,
+                        FechaCreacion = c.FechaCreacion,
+                        FechaActualizacion = c.FechaActualizacion,
+                        ClienteId = c.ClienteId,
+                        NombreCliente = c.NombreCliente,
+                        ApellidoCliente = c.ApellidoCliente,
+                        Correo = c.Correo,
+                        Telefono = c.Telefono,
+                        TipoPago = c.TipoPago,
+                        DescuentoCliente = c.DescuentoCliente,
+                        Subtotal = c.Subtotal,
+                        DescuentoTotal = c.DescuentoTotal,
+                        Impuestos = c.Impuestos,
+                        Total = c.Total,
+                        Estado = c.Estado,
+                        Moneda = c.Moneda,
+                        Origen = c.Origen,
+                        UsuarioCreador = c.UsuarioCreador,
+                        UsuarioActualiza = c.UsuarioActualiza,
+                        UsuarioAprueba = c.UsuarioAprueba,
+                        Notas = c.Notas,
+                        aplicacion = c.aplicacion,
+                        Detalles = db.CotizacionDetalles
+                            .Where(d => d.IdCotizacion == c.IdCotizacion && d.aplicacion == aplication)
+                            .Select(d => new QuoteDetailResponse
+                            {
+                                IdDetalleCotizacion = d.IdDetalleCotizacion,
+                                IdCotizacion = d.IdCotizacion,
+                                IdArticulo = d.IdArticulo,
+                                NombreArticulo = d.NombreArticulo,
+                                PrecioUnitario = d.PrecioUnitario,
+                                Cantidad = d.Cantidad,
+                                DescuentoAplicado = d.DescuentoAplicado,
+                                Subtotal = d.Subtotal,
+                                Impuestos = d.Impuestos,
+                                Total = d.Total,
+                                FechaCreacion = d.FechaCreacion,
+                                FechaActualizacion = d.FechaActualizacion,
+                                UsuarioCreador = d.UsuarioCreador,
+                                UsuarioActualiza = d.UsuarioActualiza,
+                                aplicacion = d.aplicacion
+                            }).ToList()
+                    })
+                    .ToList();
+
+                return result;
+            }
+        }
+
+        /// Consulta los datos de mis cotizaciones.
+        /// </summary>
+        /// <returns>Mensaje de éxito o error</returns>
+        public List<QuoteResponse> GetMyQuotes(int aplication, string userName)
+        {
+            using (var db = new SoftByte(configuration.appSettings.cadenaSql))
+            {
+                var result = db.Cotizaciones
+                    .Where(c => c.aplicacion == aplication && c.UsuarioCreador == userName)
+                    .Select(c => new QuoteResponse
+                    {
+                        IdCotizacion = c.IdCotizacion,
+                        FechaCreacion = c.FechaCreacion,
+                        FechaActualizacion = c.FechaActualizacion,
+                        ClienteId = c.ClienteId,
+                        NombreCliente = c.NombreCliente,
+                        ApellidoCliente = c.ApellidoCliente,
+                        Correo = c.Correo,
+                        Telefono = c.Telefono,
+                        TipoPago = c.TipoPago,
+                        DescuentoCliente = c.DescuentoCliente,
+                        Subtotal = c.Subtotal,
+                        DescuentoTotal = c.DescuentoTotal,
+                        Impuestos = c.Impuestos,
+                        Total = c.Total,
+                        Estado = c.Estado,
+                        Moneda = c.Moneda,
+                        Origen = c.Origen,
+                        UsuarioCreador = c.UsuarioCreador,
+                        UsuarioActualiza = c.UsuarioActualiza,
+                        UsuarioAprueba = c.UsuarioAprueba,
+                        Notas = c.Notas,
+                        aplicacion = c.aplicacion,
+                        Detalles = db.CotizacionDetalles
+                            .Where(d => d.IdCotizacion == c.IdCotizacion && d.aplicacion == aplication)
+                            .Select(d => new QuoteDetailResponse
+                            {
+                                IdDetalleCotizacion = d.IdDetalleCotizacion,
+                                IdCotizacion = d.IdCotizacion,
+                                IdArticulo = d.IdArticulo,
+                                NombreArticulo = d.NombreArticulo,
+                                PrecioUnitario = d.PrecioUnitario,
+                                Cantidad = d.Cantidad,
+                                DescuentoAplicado = d.DescuentoAplicado,
+                                Subtotal = d.Subtotal,
+                                Impuestos = d.Impuestos,
+                                Total = d.Total,
+                                FechaCreacion = d.FechaCreacion,
+                                FechaActualizacion = d.FechaActualizacion,
+                                UsuarioCreador = d.UsuarioCreador,
+                                UsuarioActualiza = d.UsuarioActualiza,
+                                aplicacion = d.aplicacion
+                            }).ToList()
+                    })
+                    .ToList();
+
+                return result;
+            }
+        }
+
+
+        public Dictionary<string, object> GetQuotesDashboard(int aplication)
+        {
+            using (var db = new SoftByte(configuration.appSettings.cadenaSql))
+            {
+                var cotizaciones = db.Cotizaciones
+                    .Where(c => c.aplicacion == aplication)
+                    .ToList();
+
+                var detalles = db.CotizacionDetalles
+                    .Where(d => d.aplicacion == aplication)
+                    .ToList();
+
+                var totalCotizaciones = cotizaciones.Count;
+                var totalIngresos = cotizaciones.Sum(c => c.Total);
+                var totalDescuentos = cotizaciones.Sum(c => c.DescuentoTotal);
+                var totalImpuestos = cotizaciones.Sum(c => c.Impuestos);
+
+                var cotizacionesPorEstado = cotizaciones
+                    .GroupBy(c => c.Estado)
+                    .Select(g => new { estado = g.Key, cantidad = g.Count() })
+                    .ToList();
+
+                var cotizacionesPorOrigen = cotizaciones
+                    .GroupBy(c => c.Origen)
+                    .Select(g => new { origen = g.Key, cantidad = g.Count() })
+                    .ToList();
+
+                var totalesPorMes = cotizaciones
+                    .GroupBy(c => new { mes = c.FechaCreacion.Month, año = c.FechaCreacion.Year })
+                    .Select(g => new {
+                        mes = g.Key.mes,
+                        año = g.Key.año,
+                        total = g.Sum(c => c.Total)
+                    })
+                    .OrderBy(g => g.año).ThenBy(g => g.mes)
+                    .ToList();
+
+                var cotizacionesPorUsuario = cotizaciones
+                    .GroupBy(c => c.UsuarioCreador)
+                    .Select(g => new {
+                        usuario = g.Key,
+                        cantidad = g.Count(),
+                        total = g.Sum(c => c.Total)
+                    })
+                    .OrderByDescending(g => g.cantidad)
+                    .ToList();
+
+                var articulosMasCotizados = detalles
+                    .GroupBy(d => d.NombreArticulo)
+                    .Select(g => new {
+                        articulo = g.Key,
+                        cantidadTotal = g.Sum(d => d.Cantidad),
+                        vecesCotizado = g.Count()
+                    })
+                    .OrderByDescending(g => g.cantidadTotal)
+                    .Take(5)
+                    .ToList();
+
+                var promedioArticulosPorCotizacion = totalCotizaciones > 0
+                    ? detalles.Count / (double)totalCotizaciones
+                    : 0;
+
+                var promedioMensualCotizaciones = cotizaciones
+                    .GroupBy(c => new { c.FechaCreacion.Year, c.FechaCreacion.Month })
+                    .Select(g => g.Count())
+                    .DefaultIfEmpty(0)
+                    .Average();
+
+                var tiposPago = cotizaciones
+                    .GroupBy(c => c.TipoPago)
+                    .Select(g => new { tipo = g.Key, cantidad = g.Count() })
+                    .ToList();
+
+                var clientesUnicos = cotizaciones
+                    .Select(c => c.Correo?.ToLower().Trim())
+                    .Where(correo => !string.IsNullOrEmpty(correo))
+                    .Distinct()
+                    .Count();
+
+                return new Dictionary<string, object>
+        {
+            { "totalCotizaciones", totalCotizaciones },
+            { "totalIngresos", totalIngresos },
+            { "totalDescuentos", totalDescuentos },
+            { "totalImpuestos", totalImpuestos },
+            { "cotizacionesPorEstado", cotizacionesPorEstado },
+            { "cotizacionesPorOrigen", cotizacionesPorOrigen },
+            { "totalesPorMes", totalesPorMes },
+            { "cotizacionesPorUsuario", cotizacionesPorUsuario },
+            { "articulosMasCotizados", articulosMasCotizados },
+            { "promedioArticulosPorCotizacion", promedioArticulosPorCotizacion },
+            { "promedioMensualCotizaciones", promedioMensualCotizaciones },
+            { "tiposPago", tiposPago },
+            { "clientesUnicos", clientesUnicos }
+        };
+            }
+        }
 
 
 
