@@ -38,6 +38,7 @@ namespace CommerceCore.ML
         /// relación con la aplicación
         /// </summary>
         public int? Aplicación { get; set; }
+        public string? telefono { get; set; }
 
         //public virtual Aplicacion? AplicaciónNavigation { get; set; }
 

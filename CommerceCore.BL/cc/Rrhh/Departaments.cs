@@ -56,39 +56,56 @@ namespace CommerceCore.BL.cc.Rrhh
                 {
                     if (request == null)
                     {
-                        throw new Exception("Los datos del departamento a crear se encuentran vacios");
+                        throw new Exception("Los datos del departamento a crear se encuentran vacíos.");
                     }
 
-                    // Convertir fechas para PostgreSQL
                     DateTime fechaActual = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified);
 
-                    var newDepartaments = new Departamento
+                    // 🔹 Generar código único
+                    string nombreSanitizado = new string(request.NombreDepartamento
+                        .ToUpperInvariant()
+                        .Where(c => char.IsLetterOrDigit(c))
+                        .ToArray());
+
+                    string guidSegment = Guid.NewGuid().ToString().Split('-')[0]; // parte corta
+                    string codigoGenerado = $"{nombreSanitizado}_{guidSegment}";
+
+                    // 🔍 Validar unicidad
+                    bool codigoExiste = db.Departamentos.Any(d => d.CodigoDepartamento == codigoGenerado);
+                    while (codigoExiste)
+                    {
+                        guidSegment = Guid.NewGuid().ToString().Split('-')[0];
+                        codigoGenerado = $"{nombreSanitizado}_{guidSegment}";
+                        codigoExiste = db.Departamentos.Any(d => d.CodigoDepartamento == codigoGenerado);
+                    }
+
+                    var newDepartament = new Departamento
                     {
                         NombreDepartamento = request.NombreDepartamento,
                         Descripcion = request.Descripcion,
-                        CodigoDepartamento = request.CodigoDepartamento,
+                        CodigoDepartamento = codigoGenerado, // 🚀 generado internamente
                         UbicacionFisica = request.UbicacionFisica,
                         CorreoContacto = request.CorreoContacto,
                         ExtensionTelefonica = request.ExtensionTelefonica,
-                        Estado = request.Estado,
+                        Estado = "Activo",
                         Observaciones = request.Observaciones,
                         CreatedBy = request.CreatedBy,
                         CreatedAt = fechaActual,
-                        UpdatedAt = fechaActual,
                         UpdatedBy = request.UpdatedBy,
-                        Aplicación = aplication
+                        UpdatedAt = fechaActual,
+                        Aplicación = aplication,
+                        telefono = request.telefono
                     };
 
-                    db.Departamentos.Add(newDepartaments);
+                    db.Departamentos.Add(newDepartament);
                     db.SaveChanges();
 
-                    if (newDepartaments.IdDepartamento == Guid.Empty)
+                    if (newDepartament.IdDepartamento == Guid.Empty)
                     {
                         throw new Exception("No se pudo generar el ID del departamento.");
                     }
 
-
-                    return newDepartaments;
+                    return newDepartament;
                 }
             }
             catch (DbUpdateException ex)
@@ -103,13 +120,14 @@ namespace CommerceCore.BL.cc.Rrhh
 
 
 
+
         /// <summary>
         /// Actualiza un departamento existente.
         /// </summary>
         /// <param name="request">Objeto Departamento con los datos actualizados</param>
         /// <param name="userName">Usuario que realiza la actualización</param>
         /// <returns>Departamento actualizado</returns>
-        public Departamento UpdateDepartamentsCompany(Departamento request, string userName)
+        public Departamento UpdateDepartamentsCompany(Departamento request, string userName, int aplicacion)
         {
             try
             {
@@ -136,9 +154,10 @@ namespace CommerceCore.BL.cc.Rrhh
                     existingDepartamento.ExtensionTelefonica = request.ExtensionTelefonica;
                     existingDepartamento.Estado = request.Estado;
                     existingDepartamento.Observaciones = request.Observaciones;
-                    existingDepartamento.Aplicación = request.Aplicación;
+                    existingDepartamento.Aplicación = aplicacion;
                     existingDepartamento.UpdatedAt = DateTime.Now;
                     existingDepartamento.UpdatedBy = userName;
+                    existingDepartamento.telefono = request.telefono;
 
 
                     db.SaveChanges();

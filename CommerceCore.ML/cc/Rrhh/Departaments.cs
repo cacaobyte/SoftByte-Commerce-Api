@@ -37,6 +37,7 @@ namespace CommerceCore.ML.cc.Rrhh
         /// relación con la aplicación
         /// </summary>
         public int? Aplicación { get; set; }
+        public string? telefono { get; set; }
 
    
     }

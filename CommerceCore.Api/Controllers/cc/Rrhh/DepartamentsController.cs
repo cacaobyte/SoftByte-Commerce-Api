@@ -54,7 +54,7 @@ namespace CommerceCore.Api.Controllers.cc.Rrhh
         {
             try
             {
-                var result = departamentsBl.UpdateDepartamentsCompany(request, userName);
+                var result = departamentsBl.UpdateDepartamentsCompany(request, userName, IdAplication);
                 return Ok(result);
             }
             catch (Exception ex)
