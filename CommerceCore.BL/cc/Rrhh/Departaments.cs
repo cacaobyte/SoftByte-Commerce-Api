@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using CommerceCore.BL.cc.cloudinary;
 using Microsoft.EntityFrameworkCore;
 using CommerceCore.ML.cc.Rrhh;
-using CommerceCore.ML.cc.sale.Quotes;
+
 
 namespace CommerceCore.BL.cc.Rrhh
 {
@@ -21,6 +21,13 @@ namespace CommerceCore.BL.cc.Rrhh
         }
 
 
+        /// <summary>
+        /// Traer los departamentos de la compañia.
+        /// </summary>
+        /// <param name="request">Objeto con los datos del departamento de la compañia</param>
+        /// <param name="userName">Usuario que crea el registro</param>
+        /// <param name="aplication">Id de la aplicacion</param>
+        /// <returns>Mensaje de éxito o error</returns>
         public List<Departamento> GetDepartamentsCompany(string userName, int aplicacion)
         {
             try
@@ -42,7 +49,7 @@ namespace CommerceCore.BL.cc.Rrhh
 
 
         /// <summary>
-        /// Agrega una nueva cotización.
+        /// Agrega un nuevo departamnento.
         /// </summary>
         /// <param name="request">Objeto con los datos del departamento de la compañia</param>
         /// <param name="userName">Usuario que crea el registro</param>
