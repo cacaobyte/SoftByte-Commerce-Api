@@ -73,9 +73,10 @@ namespace CommerceCore.BL.cc.Rrhh
                         Estado = request.Estado,
                         Observaciones = request.Observaciones,
                         CreatedBy = request.CreatedBy,
-                        CreatedAt = request.CreatedAt,
-                        UpdatedAt = request.UpdatedAt,
+                        CreatedAt = fechaActual,
+                        UpdatedAt = fechaActual,
                         UpdatedBy = request.UpdatedBy,
+                        Aplicación = aplication
                     };
 
                     db.Departamentos.Add(newDepartaments);
@@ -138,6 +139,7 @@ namespace CommerceCore.BL.cc.Rrhh
                     existingDepartamento.Aplicación = request.Aplicación;
                     existingDepartamento.UpdatedAt = DateTime.Now;
                     existingDepartamento.UpdatedBy = userName;
+
 
                     db.SaveChanges();
 
