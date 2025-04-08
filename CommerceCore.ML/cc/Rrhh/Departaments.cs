@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CommerceCore.ML
+namespace CommerceCore.ML.cc.Rrhh
 {
-    public partial class Departamento
+    public class DepartamentsRrhh
     {
-        public Guid IdDepartamento { get; set; }
 
         public string NombreDepartamento { get; set; } = null!;
 
@@ -39,11 +38,6 @@ namespace CommerceCore.ML
         /// </summary>
         public int? Aplicación { get; set; }
 
-        //public virtual Aplicacion? AplicaciónNavigation { get; set; }
-
-        //public virtual ICollection<Empleado> Empleados { get; set; } = new List<Empleado>();
-
-        //public virtual ICollection<Puesto> Puestos { get; set; } = new List<Puesto>();
+   
     }
-
 }

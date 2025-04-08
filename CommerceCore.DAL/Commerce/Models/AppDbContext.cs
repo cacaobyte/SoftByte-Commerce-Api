@@ -719,9 +719,9 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("updated_by");
 
-            entity.HasOne(d => d.DepartamentoNavigation).WithMany(p => p.Empleados)
-                .HasForeignKey(d => d.Departamento)
-                .HasConstraintName("empleados_departamento_fkey");
+            //entity.HasOne(d => d.DepartamentoNavigation).WithMany(p => p.Empleados)
+            //    .HasForeignKey(d => d.Departamento)
+            //    .HasConstraintName("empleados_departamento_fkey");
 
             entity.HasOne(d => d.PuestoNavigation).WithMany(p => p.Empleados)
                 .HasForeignKey(d => d.Puesto)
@@ -1173,9 +1173,9 @@ public partial class AppDbContext : DbContext
             //    .HasForeignKey(d => d.Aplicación)
             //    .HasConstraintName("puestos_aplicación_fkey");
 
-            entity.HasOne(d => d.IdDepartamentoNavigation).WithMany(p => p.Puestos)
-                .HasForeignKey(d => d.IdDepartamento)
-                .HasConstraintName("fk_puesto_departamento");
+            //entity.HasOne(d => d.IdDepartamentoNavigation).WithMany(p => p.Puestos)
+            //    .HasForeignKey(d => d.IdDepartamento)
+            //    .HasConstraintName("fk_puesto_departamento");
         });
 
 
