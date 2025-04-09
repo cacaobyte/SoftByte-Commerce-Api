@@ -723,9 +723,9 @@ public partial class AppDbContext : DbContext
             //    .HasForeignKey(d => d.Departamento)
             //    .HasConstraintName("empleados_departamento_fkey");
 
-            entity.HasOne(d => d.PuestoNavigation).WithMany(p => p.Empleados)
-                .HasForeignKey(d => d.Puesto)
-                .HasConstraintName("empleados_puesto_fkey");
+            //entity.HasOne(d => d.PuestoNavigation).WithMany(p => p.Empleados)
+            //    .HasForeignKey(d => d.Puesto)
+            //    .HasConstraintName("empleados_puesto_fkey");
         });
 
 

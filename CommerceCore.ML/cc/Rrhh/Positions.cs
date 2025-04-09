@@ -10,6 +10,7 @@ namespace CommerceCore.ML.cc.Rrhh
     {
 
         public Guid IdDepartamento { get; set; }
+        public string? NombreDepartamento { get; set; }
 
         public string NombrePuesto { get; set; } = null!;
 

@@ -33,7 +33,7 @@ namespace CommerceCore.BL.cc.Rrhh
                 using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
                 {
                     var PositionsList = new List<Puesto>();
-                    PositionsList = db.Puestos.Where(d => d.Aplicación == aplicacion).ToList();
+                    PositionsList = db.Puestos.Where(d => d.Aplicación == aplicacion ).ToList();
                     return PositionsList;
                 }
             }
@@ -85,6 +85,7 @@ namespace CommerceCore.BL.cc.Rrhh
                     {
                         IdPuesto = Guid.NewGuid(),
                         IdDepartamento = idDepartamento,
+                        NombreDepartamento = request.NombreDepartamento,
                         NombrePuesto = request.NombrePuesto,
                         Descripcion = request.Descripcion,
                         CodigoPuesto = codigoGenerado,
@@ -151,6 +152,7 @@ namespace CommerceCore.BL.cc.Rrhh
 
                     // Actualizar campos
                     puestoExistente.NombrePuesto = request.NombrePuesto;
+                    puestoExistente.NombreDepartamento = request.NombreDepartamento;
                     puestoExistente.Descripcion = request.Descripcion;
                     puestoExistente.NivelJerarquico = request.NivelJerarquico;
                     puestoExistente.TipoPuesto = request.TipoPuesto;

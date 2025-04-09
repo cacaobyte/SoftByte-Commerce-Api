@@ -9,6 +9,7 @@ namespace CommerceCore.ML
     public partial class Puesto
     {
         public Guid IdPuesto { get; set; }
+        public string? NombreDepartamento { get; set; }
 
         public Guid IdDepartamento { get; set; }
 
@@ -61,11 +62,11 @@ namespace CommerceCore.ML
         /// </summary>
         public int? Aplicación { get; set; }
 
-        public virtual Aplicacion? AplicaciónNavigation { get; set; }
+        //public virtual Aplicacion? AplicaciónNavigation { get; set; }
 
-        public virtual ICollection<Empleado> Empleados { get; set; } = new List<Empleado>();
+        //public virtual ICollection<Empleado> Empleados { get; set; } = new List<Empleado>();
 
-        public virtual Departamento IdDepartamentoNavigation { get; set; } = null!;
+        //public virtual Departamento IdDepartamentoNavigation { get; set; } = null!;
     }
 
 }
