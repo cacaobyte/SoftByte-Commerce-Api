@@ -127,6 +127,64 @@ namespace CommerceCore.BL.cc.Rrhh
         }
 
 
+        /// <summary>
+        /// Actualiza los datos de un puesto existente.
+        /// </summary>
+        /// <param name="request">Datos actualizados del puesto</param>
+        /// <param name="userName">Usuario que actualiza el puesto</param>
+        /// <param name="aplicacion">ID de la aplicación</param>
+        /// <returns>Instancia del puesto actualizado</returns>
+        public Puesto UpdatePosition(Puesto request, string userName, int aplicacion)
+        {
+            try
+            {
+                using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
+                {
+                    if (request == null || request.IdPuesto == Guid.Empty)
+                        throw new Exception("Los datos del puesto a actualizar no son válidos.");
+
+                    var puestoExistente = db.Puestos.FirstOrDefault(p =>
+                        p.IdPuesto == request.IdPuesto && p.Aplicación == aplicacion);
+
+                    if (puestoExistente == null)
+                        throw new Exception("El puesto que desea actualizar no existe.");
+
+                    // Actualizar campos
+                    puestoExistente.NombrePuesto = request.NombrePuesto;
+                    puestoExistente.Descripcion = request.Descripcion;
+                    puestoExistente.NivelJerarquico = request.NivelJerarquico;
+                    puestoExistente.TipoPuesto = request.TipoPuesto;
+                    puestoExistente.SueldoBase = request.SueldoBase;
+                    puestoExistente.ModalidadTrabajo = request.ModalidadTrabajo;
+                    puestoExistente.RequiereSupervision = request.RequiereSupervision;
+                    puestoExistente.EsPuestoBase = request.EsPuestoBase;
+                    puestoExistente.CantidadVacantes = request.CantidadVacantes;
+                    puestoExistente.HorarioTrabajo = request.HorarioTrabajo;
+                    puestoExistente.RequisitosMinimos = request.RequisitosMinimos;
+                    puestoExistente.CapacitacionRequerida = request.CapacitacionRequerida;
+                    puestoExistente.RiesgoLaboral = request.RiesgoLaboral;
+                    puestoExistente.HerramientasUtilizadas = request.HerramientasUtilizadas;
+                    puestoExistente.UniformeRequerido = request.UniformeRequerido;
+                    puestoExistente.Observaciones = request.Observaciones;
+                    puestoExistente.Estado = request.Estado ?? puestoExistente.Estado;
+                    puestoExistente.UpdatedBy = userName;
+                    puestoExistente.UpdatedAt = DateTime.Now;
+                    puestoExistente.Aplicación = aplicacion;
+
+                    db.SaveChanges();
+
+                    return puestoExistente;
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new Exception($"Error al actualizar en la base de datos: {ex.InnerException?.Message ?? ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error inesperado: {ex.Message}");
+            }
+        }
 
 
 

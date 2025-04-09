@@ -9,7 +9,7 @@ namespace CommerceCore.ML.cc.Rrhh
     public class PositionsRrhh
     {
 
-        //public Guid IdDepartamento { get; set; }
+        public Guid IdDepartamento { get; set; }
 
         public string NombrePuesto { get; set; } = null!;
 
