@@ -18,8 +18,8 @@ namespace CommerceCore.Api.Controllers.cc.UpTimeRobot
         {
             try
             {
-                
-                return Ok("pong");
+
+                return Ok(new { status = "pong", timestamp = DateTime.UtcNow });
             }
             catch (Exception ex)
             {
