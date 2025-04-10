@@ -2,6 +2,7 @@
 using CommerceCore.BL.cc.sale.quotes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using CommerceCore.BL.cc.Home;
 
 
 namespace CommerceCore.Api.Controllers.cc.Home
@@ -10,7 +11,7 @@ namespace CommerceCore.Api.Controllers.cc.Home
     [ApiController]
     public class WelcomeController : CustomController
     {
-
+        private Welcome blwelcome = new Welcome(Tool.configuration);
         /// <summary>
         /// Devuelve los datos de metricas almacenados por el sistemas Saas
         /// </summary>
@@ -20,8 +21,8 @@ namespace CommerceCore.Api.Controllers.cc.Home
         {
             try
             {
-              //  var result = quotesBl.GetQuotesCacao(userName);
-                return Ok("");
+                var result = blwelcome.GetMetricSaas(userName);
+                return Ok(result);
             }
             catch (Exception ex)
             {

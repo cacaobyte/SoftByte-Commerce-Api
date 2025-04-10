@@ -1,0 +1,126 @@
+﻿
+
+CREATE TABLE softbytecommerce.empleados (
+    id_empleado UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    -- Información personal
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    genero VARCHAR(20),
+    fecha_nacimiento DATE,
+    tipo_documento VARCHAR(20),
+    numero_documento VARCHAR(50),
+    nacionalidad VARCHAR(100),
+    correo VARCHAR(150),
+    telefono1 VARCHAR(30),
+    telefono2 VARCHAR(30),
+    direccion TEXT,
+    departamento_residencia VARCHAR(100),
+    municipio_residencia VARCHAR(100),
+    foto VARCHAR(255), -- URL o path de la foto del empleado
+
+    -- Información laboral
+
+    fecha_ingreso DATE,
+    fecha_egreso DATE,
+    tipo_contrato VARCHAR(50), -- indefinido, temporal, servicios, etc.
+    tipo_empleado VARCHAR(50), -- tiempo completo, medio tiempo, pasante, etc.
+    jornada VARCHAR(50), -- diurna, nocturna, mixta
+    salario NUMERIC(12, 2),
+    estado_empleado VARCHAR(20) DEFAULT 'activo', -- activo, inactivo, suspendido, etc.
+
+    -- Datos de seguridad y emergencia
+    tipo_sangre VARCHAR(5),
+    contacto_emergencia_nombre VARCHAR(100),
+    contacto_emergencia_parentesco VARCHAR(50),
+    contacto_emergencia_telefono VARCHAR(30),
+    contacto_emergencia_direccion TEXT,
+
+    -- Campos generales para control
+    observaciones TEXT,
+    notas_internas TEXT,
+
+    -- Auditoría
+    created_by VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by VARCHAR(100),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+## Campos adicionales
+
+//    puesto VARCHAR(150),
+//    departamento VARCHAR(150),
+
+
+
+
+
+CREATE TABLE softbytecommerce.departamentos (
+    id_departamento UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    -- Información general
+    nombre_departamento VARCHAR(150) NOT NULL,
+    descripcion TEXT,
+    codigo_departamento VARCHAR(50),
+    ubicacion_fisica VARCHAR(150),
+    correo_contacto VARCHAR(150),
+    extension_telefonica VARCHAR(20),
+
+    -- Estado y trazabilidad
+    estado VARCHAR(20) DEFAULT 'activo',
+    observaciones TEXT,
+
+    -- Auditoría
+    created_by VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by VARCHAR(100),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+CREATE TABLE softbytecommerce.puestos (
+    id_puesto UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_departamento UUID NOT NULL,
+
+    -- Información general
+    nombre_puesto VARCHAR(150) NOT NULL,
+    descripcion TEXT,
+    codigo_puesto VARCHAR(50),
+    nivel_jerarquico VARCHAR(50),
+    tipo_puesto VARCHAR(50),
+    sueldo_base NUMERIC(12,2),
+    modalidad_trabajo VARCHAR(50), -- Presencial, remoto, híbrido
+    requiere_supervision BOOLEAN DEFAULT FALSE,
+    es_puesto_base BOOLEAN DEFAULT TRUE,
+    cantidad_vacantes INTEGER DEFAULT 1,
+
+    -- Nuevos campos agregados
+    horario_trabajo TEXT, -- Por ejemplo: Lunes a Viernes, 8:00 a 17:00
+    requisitos_minimos TEXT, -- Grado académico, experiencia, idiomas
+    capacitacion_requerida BOOLEAN DEFAULT FALSE,
+    riesgo_laboral TEXT, -- Riesgo eléctrico, biológico, etc.
+    herramientas_utilizadas TEXT, -- Software o maquinaria
+    uniforme_requerido BOOLEAN DEFAULT FALSE,
+    observaciones TEXT,
+
+    -- Estado y trazabilidad
+    estado VARCHAR(20) DEFAULT 'activo',
+
+    -- Auditoría
+    created_by VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by VARCHAR(100),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_puesto_departamento FOREIGN KEY (id_departamento)
+        REFERENCES softbytecommerce.departamentos(id_departamento)
+        ON DELETE CASCADE
+);
+
+
+
+
+
