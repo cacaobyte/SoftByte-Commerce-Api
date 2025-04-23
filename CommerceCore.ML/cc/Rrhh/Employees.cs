@@ -4,16 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CommerceCore.ML
+namespace CommerceCore.ML.cc.Rrhh
 {
-    public partial class Empleado
+    public class EmployeesRrhh
     {
-        public Guid IdEmpleado { get; set; }
 
         public string Nombres { get; set; } = null!;
-        public int? aplicacion { get; set; }
 
         public string Apellidos { get; set; } = null!;
+        public int? aplicacion { get; set; }
 
         public string? Genero { get; set; }
 
@@ -83,5 +82,4 @@ namespace CommerceCore.ML
 
         //public virtual Puesto? PuestoNavigation { get; set; }
     }
-
 }
