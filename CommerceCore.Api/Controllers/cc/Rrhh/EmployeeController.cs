@@ -22,7 +22,7 @@ namespace CommerceCore.Api.Controllers.cc.Rrhh
             try
             {
                 var result = blEmployees.GetEmployeesCompany(userName, IdAplication);
-                return Ok("");
+                return Ok(result);
             }
             catch (Exception ex)
             {
