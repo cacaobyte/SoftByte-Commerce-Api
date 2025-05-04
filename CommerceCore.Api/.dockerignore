@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+**/*.user
+**/*.suo
+.vscode
+.idea
+.DS_Store
+*.md
+*.ps1
+*.bat
+.git
+.env
+node_modules
