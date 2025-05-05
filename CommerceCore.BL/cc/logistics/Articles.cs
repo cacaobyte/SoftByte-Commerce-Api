@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using ExistenciaBodega = CommerceCore.ML.ExistenciaBodega;
 using Bodega = CommerceCore.ML.Bodega;
 using CommerceCore.ML.cc.sale;
+using CommerceCore.ML.Commerce;
 
 namespace CommerceCore.BL.cc.logistics
 {
@@ -60,6 +61,78 @@ namespace CommerceCore.BL.cc.logistics
                 throw new ApplicationException("An error occurred while retrieving the articles.", ex);
             }
         }
+
+        /// <summary>
+        /// Obtiene todos los productos del commerce
+        /// </summary>
+        /// <returns>Lista de productos para los clientes del commerce</returns>
+        public List<ArticuloAgrupadoDto> GetProductosCommerce(int idAplication)
+        {
+            try
+            {
+                using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
+                {
+                    // Traer artículos junto con existencias y bodegas de la misma aplicación
+                    var articulosConExistencia = db.Articulos
+                        .Join(db.ExistenciaBodegas, art => art.Articulo1, exb => exb.Articulo, (art, exb) => new { Articulo = art, Existencia = exb })
+                        .Join(db.Bodegas, combined => combined.Existencia.Bodega, bod => bod.Bodega1, (combined, bod) => new
+                        {
+                            Articulo = combined.Articulo,
+                            Existencia = combined.Existencia,
+                            Bodega = bod
+                        })
+                        .Where(x =>
+                            !string.IsNullOrEmpty(x.Articulo.Articulo1) &&
+                            !x.Articulo.Articulo1.StartsWith("M") &&
+                            x.Articulo.Aplicacion == idAplication &&
+                            x.Bodega.Aplicacion == idAplication
+                        )
+                        .ToList();
+
+
+
+                    // Agrupar por artículo y mapear al DTO
+                    var agrupado = articulosConExistencia
+                        .GroupBy(x => x.Articulo.Articulo1)
+                        .Select(grp =>
+                        {
+                            var primer = grp.First();
+
+                            var dto = new ArticuloAgrupadoDto
+                            {
+                                Articulo = primer.Articulo.Articulo1,
+                                Descripcion = primer.Articulo.Descripcion,
+                                Foto = primer.Articulo.Foto,
+                                Categoria = primer.Articulo.Categoria,
+                                Clasificacion = primer.Articulo.Clasificacion,
+                                VariantesPorBodega = new Dictionary<string, VarianteBodegaDto>()
+                            };
+
+                            foreach (var item in grp)
+                            {
+                                dto.VariantesPorBodega[item.Bodega.Bodega1] = new VarianteBodegaDto
+                                {
+                                    Bodega = item.Bodega.Bodega1,
+                                    Precio = item.Articulo.Precio, 
+                                    Disponible = item.Existencia.CantDisponible ?? 0,
+                                    Ubicacion = item.Bodega.Direccion ?? string.Empty
+                                };
+                            }
+
+                            return dto;
+                        })
+                        .ToList();
+
+                    return agrupado;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Ocurrió un error al obtener los productos del commerce.", ex);
+            }
+        }
+
+
 
         /// <summary>
         /// Obtiene todas las existencias de artículos que no son para mayoreo
