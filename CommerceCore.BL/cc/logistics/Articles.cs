@@ -72,50 +72,55 @@ namespace CommerceCore.BL.cc.logistics
             {
                 using (SoftByte db = new SoftByte(configuration.appSettings.cadenaSql))
                 {
-                    // Traer artículos junto con existencias y bodegas de la misma aplicación
-                    var articulosConExistencia = db.Articulos
-                        .Join(db.ExistenciaBodegas, art => art.Articulo1, exb => exb.Articulo, (art, exb) => new { Articulo = art, Existencia = exb })
-                        .Join(db.Bodegas, combined => combined.Existencia.Bodega, bod => bod.Bodega1, (combined, bod) => new
+                    var articulosPlano = db.Articulos
+                        .Join(db.ExistenciaBodegas, a => a.Articulo1, eb => eb.Articulo, (a, eb) => new { a, eb })
+                        .Join(db.Bodegas, ab => ab.eb.Bodega, b => b.Bodega1, (ab, b) => new
                         {
-                            Articulo = combined.Articulo,
-                            Existencia = combined.Existencia,
-                            Bodega = bod
+                            Articulo = ab.a.Articulo1,
+                            Descripcion = ab.a.Descripcion,
+                            Foto = ab.a.Foto,
+                            Categoria = ab.a.Categoria,
+                            Clasificacion = ab.a.Clasificacion,
+                            Precio = ab.a.Precio,
+                            AplicacionArticulo = ab.a.Aplicacion,
+                            AplicacionBodega = b.Aplicacion,
+                            BodegaId = b.Bodega1,
+                            Disponible = ab.eb.CantDisponible ?? 0,
+                            Ubicacion = b.Direccion ?? string.Empty
                         })
                         .Where(x =>
-                            !string.IsNullOrEmpty(x.Articulo.Articulo1) &&
-                            !x.Articulo.Articulo1.StartsWith("M") &&
-                            x.Articulo.Aplicacion == idAplication &&
-                            x.Bodega.Aplicacion == idAplication
+                            !string.IsNullOrEmpty(x.Articulo) &&
+                            !x.Articulo.StartsWith("M") &&
+                            x.AplicacionArticulo == idAplication &&
+                            x.AplicacionBodega == idAplication
                         )
                         .ToList();
 
-
-
-                    // Agrupar por artículo y mapear al DTO
-                    var agrupado = articulosConExistencia
-                        .GroupBy(x => x.Articulo.Articulo1)
+                    // Agrupar por artículo
+                    var resultado = articulosPlano
+                        .GroupBy(x => x.Articulo)
                         .Select(grp =>
                         {
-                            var primer = grp.First();
+                            var primero = grp.First();
 
                             var dto = new ArticuloAgrupadoDto
                             {
-                                Articulo = primer.Articulo.Articulo1,
-                                Descripcion = primer.Articulo.Descripcion,
-                                Foto = primer.Articulo.Foto,
-                                Categoria = primer.Articulo.Categoria,
-                                Clasificacion = primer.Articulo.Clasificacion,
+                                Articulo = primero.Articulo,
+                                Descripcion = primero.Descripcion,
+                                Foto = primero.Foto,
+                                Categoria = primero.Categoria,
+                                Clasificacion = primero.Clasificacion,
                                 VariantesPorBodega = new Dictionary<string, VarianteBodegaDto>()
                             };
 
                             foreach (var item in grp)
                             {
-                                dto.VariantesPorBodega[item.Bodega.Bodega1] = new VarianteBodegaDto
+                                dto.VariantesPorBodega[item.BodegaId] = new VarianteBodegaDto
                                 {
-                                    Bodega = item.Bodega.Bodega1,
-                                    Precio = item.Articulo.Precio, 
-                                    Disponible = item.Existencia.CantDisponible ?? 0,
-                                    Ubicacion = item.Bodega.Direccion ?? string.Empty
+                                    Bodega = item.BodegaId,
+                                    Precio = item.Precio,
+                                    Disponible = item.Disponible,
+                                    Ubicacion = item.Ubicacion
                                 };
                             }
 
@@ -123,7 +128,7 @@ namespace CommerceCore.BL.cc.logistics
                         })
                         .ToList();
 
-                    return agrupado;
+                    return resultado;
                 }
             }
             catch (Exception ex)
@@ -131,6 +136,7 @@ namespace CommerceCore.BL.cc.logistics
                 throw new ApplicationException("Ocurrió un error al obtener los productos del commerce.", ex);
             }
         }
+
 
 
 

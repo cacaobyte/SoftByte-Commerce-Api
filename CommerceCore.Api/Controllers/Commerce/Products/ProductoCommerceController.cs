@@ -34,6 +34,24 @@ namespace CommerceCore.Api.Controllers.Commerce.Products
             }
         }
 
+        /// <summary>
+        /// Devuelve las existencias de artículos para tienda y clientes minuristas
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("test")]
+        public IActionResult GetTest()
+        {
+            try
+            {
+               
+                return Ok("hello Wolrd");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while retrieving the articles.{ex}");
+            }
+        }
+
 
     }
 }
