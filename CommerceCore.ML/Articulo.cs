@@ -40,7 +40,7 @@ public partial class Articulo
     public string? Clasificacion { get; set; }
     public int Aplicacion { get; set; }
 
-    public virtual Aplicacion AplicacionNavigation { get; set; } = null!;
+   // public virtual Aplicacion AplicacionNavigation { get; set; } = null!;
 
     // public virtual ICollection<ExistenciaBodega> ExistenciaBodegas { get; set; } = new List<ExistenciaBodega>();
 }
